@@ -2,6 +2,7 @@
 
     <h1>HALAMAN LOGIN</h1>
     <form action="{{ route('auth.store') }}" method="POST">
+        @csrf
         <div>
             <label for="email">Email</label>
             <input type="email" name="email" id="email" />

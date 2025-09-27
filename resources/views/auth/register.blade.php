@@ -3,9 +3,14 @@
 
     <h1>HALAMAN REGISTER</h1>
     <form action="{{ route('auth.registerStore') }}" method="POST">
+        @csrf
         <div>
             <label for="name">Name</label>
             <input type="text" name="name" id="name" />
+        </div>
+        <div>
+            <label for="nomor_telepon">Nomor Telepon</label>
+            <input type="text" name="nomor_telepon" id="nomor_telepon" />
         </div>
         <div>
             <label for="email">Email</label>
@@ -21,3 +26,4 @@
         </div>
         <button type="submit">Register</button>
     </form>
+</x-layout>

@@ -11,12 +11,15 @@
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-        
-           
     </head>
-    <body>
-      <main>
-      {{ $slot }}
-      </main>   
+    <body class="bg-gray-50">
+        <x-side />
+
+        <!-- Main Content Area -->
+        <main class="lg:ml-80 min-h-screen transition-all duration-300">
+            <div class="p-4 lg:p-8">
+                {{ $slot }}
+            </div>
+        </main>   
     </body>
 </html>

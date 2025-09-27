@@ -15,17 +15,21 @@ class AuthController extends Controller
 
     public function registerStore(Request $request)
     {
+        // dd($request->all());
 
         $request->validate([
             'name' => 'required|string|max:255',
+            'nomor_telepon' => 'nullable|string|max:20',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
         ]);
         $user = User::create([
             'name' => $request->name,
+            'nomor_telepon' => $request->nomor_telepon,
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'role' => 'user',
+            'aktif' => true,
         ]);
         Auth::login($user);
         return redirect()->route('guest.welcome')->with('success', 'Registration successful!');
@@ -42,7 +46,7 @@ class AuthController extends Controller
         ]);
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('guest.welcome')->with('success', 'Login successful!');
+            return redirect()->intended('/')->with('success', 'Login successful!');
         }
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
