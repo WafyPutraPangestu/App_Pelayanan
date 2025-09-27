@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\SuratPengantar;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class SuratPengantarController extends Controller
 {
@@ -53,32 +54,55 @@ class SuratPengantarController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(SuratPengantar $surat_pengantar)
     {
-        return view('user.surat_pengantar.show');
+        if ($surat_pengantar->user_id !== Auth::id()) {
+            abort(403, 'AKSES DITOLAK');
+        }
+        return view('user.surat_pengantar.show', compact('surat_pengantar'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit(SuratPengantar $surat_pengantar)
     {
-        return view('user.surat_pengantar.edit');
+        if ($surat_pengantar->user_id !== Auth::id()) {
+            abort(403, 'AKSES DITOLAK');
+        }
+        if ($surat_pengantar->status !== 'diproses') {
+            return redirect()->route('surat.tracking')->with('error', 'Surat yang sudah diproses tidak dapat diedit.');
+        }
+        return view('user.surat_pengantar.edit', compact('surat_pengantar'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, SuratPengantar $surat_pengantar)
     {
-        //
+        if ($surat_pengantar->user_id !== Auth::id()) {
+            abort(403, 'AKSES DITOLAK');
+        }
+        $validatedData = $request->validate([
+            'nama' => ['required', 'string', 'max:255'],
+            'nik' => ['required', 'string', 'digits:16', Rule::unique('surat_pengantar')->ignore($surat_pengantar->id)],
+            'tempat_lahir' => ['required', 'string', 'max:255'],
+            'tanggal_lahir' => ['required', 'date'],
+            'jenis_kelamin' => ['required', 'in:Laki-laki,Perempuan'],
+            'agama' => ['required', 'string', 'max:255'],
+            'pekerjaan' => ['required', 'string', 'max:255'],
+            'alamat' => ['required', 'string'],
+            'maksud_dan_tujuan' => ['required', 'string'],
+        ]);
+
+        $surat_pengantar->update($validatedData);
+        return redirect()->route('surat.tracking')->with('success', 'Data Surat Pengantar berhasil diperbarui!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(SuratPengantar $surat_pengantar)
     {
-        //
+        if ($surat_pengantar->user_id !== Auth::id()) {
+            abort(403, 'AKSES DITOLAK');
+        }
+        if ($surat_pengantar->status === 'selesai') {
+            return back()->with('error', 'Surat yang sudah selesai tidak dapat dihapus.');
+        }
+        $surat_pengantar->delete();
+        return redirect()->route('surat.tracking')->with('success', 'Surat Pengantar berhasil dihapus.');
     }
 }

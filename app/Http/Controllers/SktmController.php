@@ -6,6 +6,7 @@ use App\Models\SuratSktm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class SktmController extends Controller
 {
@@ -53,32 +54,54 @@ class SktmController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(SuratSktm $sktm)
     {
-        return view('user.sktm.show');
+        if ($sktm->user_id !== Auth::id()) {
+            abort(403, 'AKSES DITOLAK');
+        }
+        return view('user.sktm.show', compact('sktm'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit(SuratSktm $sktm)
     {
-        return view('user.sktm.edit');
+        if ($sktm->user_id !== Auth::id()) {
+            abort(403, 'AKSES DITOLAK');
+        }
+        if ($sktm->status !== 'diproses') {
+            return redirect()->route('surat.tracking')->with('error', 'Surat yang sudah diproses tidak dapat diedit.');
+        }
+        return view('user.sktm.edit', compact('sktm'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, SuratSktm $sktm)
     {
-        //
+        if ($sktm->user_id !== Auth::id()) {
+            abort(403, 'AKSES DITOLAK');
+        }
+        $validatedData = $request->validate([
+            'nama' => ['required', 'string', 'max:255'],
+            'nik' => ['required', 'string', 'digits:16', Rule::unique('surat_sktm')->ignore($sktm->id)],
+            'tempat_lahir' => ['required', 'string', 'max:255'],
+            'tanggal_lahir' => ['required', 'date'],
+            'jenis_kelamin' => ['required', 'in:Laki-laki,Perempuan'],
+            'agama' => ['required', 'string', 'max:255'],
+            'pekerjaan' => ['required', 'string', 'max:255'],
+            'alamat' => ['required', 'string'],
+        ]);
+
+        $sktm->update($validatedData);
+        return redirect()->route('surat.tracking')->with('success', 'Data Surat Keterangan Tidak Mampu berhasil diperbarui!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(SuratSktm $sktm)
     {
-        //
+        if ($sktm->user_id !== Auth::id()) {
+            abort(403, 'AKSES DITOLAK');
+        }
+        if ($sktm->status === 'selesai') {
+            return back()->with('error', 'Surat yang sudah selesai tidak dapat dihapus.');
+        }
+        $sktm->delete();
+        return redirect()->route('surat.tracking')->with('success', 'Surat Keterangan Tidak Mampu berhasil dihapus.');
     }
 }

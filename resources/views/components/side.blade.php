@@ -159,7 +159,7 @@
             </a>
 
             <!-- Surat Menu (Auth Users Only) -->
-            @auth
+            @can('user')
             <a 
                 href="{{ route('surat.index') }}"
                 class="flex items-center space-x-3 rounded-xl px-4 py-3 text-gray-700 transition-all duration-200 hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 hover:text-green-700 group"
@@ -182,21 +182,10 @@
                         <path d="M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,6H13V13H11V6M11,16H13V18H11V16Z"/>
                     </svg>
                 </div>
-                <span class="font-medium">Tracking Surat</span>
+                <span class="font-medium">Surat Masuk</span>
             </a>
-            <a 
-                href="{{ route('pengaduan.index') }}"
-                class="flex items-center space-x-3 rounded-xl px-4 py-3 text-gray-700 transition-all duration-200 hover:bg-gradient-to-r hover:from-pink-50 hover:to-red-50 hover:text-pink-700 group"
-                :class="activeMenu.includes('pengaduan') ? 'bg-gradient-to-r from-pink-50 to-red-50 text-pink-700 shadow-sm' : ''"
-            >
-                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-pink-500 to-red-600 text-white shadow-sm group-hover:shadow-md transition-shadow">
-                    <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M9,22A1,1 0 0,1 8,21V19H5A2,2 0 0,1 3,17V5A2,2 0 0,1 5,3H19A2,2 0 0,1 21,5V17A2,2 0 0,1 19,19H12L9,22M5,5V17H19V5H5M7,7H17V9H7V7M7,11H14V13H7V11Z"/>
-                    </svg>
-                </div>
-                <span class="font-medium">Pengaduan</span>
-            </a>
-            @endauth
+           
+            @endcan
 
             <!-- Admin Only Menus -->
             @can('admin')
@@ -204,7 +193,7 @@
                 <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Admin Panel</p>
                 
                 <a 
-                    href="#"
+                    href="{{ route('dataDashboard.index') }}"
                     class="flex items-center space-x-3 rounded-xl px-4 py-3 text-gray-700 transition-all duration-200 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 hover:text-purple-700 group"
                 >
                     <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-sm group-hover:shadow-md transition-shadow">
@@ -212,11 +201,11 @@
                             <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1M12 7C13.66 7 15 8.34 15 10C15 11.66 13.66 13 12 13C10.34 13 9 11.66 9 10C9 8.34 10.34 7 12 7M18 20.5C16.25 18.94 14.24 18 12 18S7.75 18.94 6 20.5V22H18V20.5Z"/>
                         </svg>
                     </div>
-                    <span class="font-medium">Kelola Pengguna</span>
+                    <span class="font-medium">Data Dashboard</span>
                 </a>
                 
                 <a 
-                    href="#"
+                    href="{{ route('berita.index') }}"
                     class="flex items-center space-x-3 rounded-xl px-4 py-3 text-gray-700 transition-all duration-200 hover:bg-gradient-to-r hover:from-orange-50 hover:to-red-50 hover:text-orange-700 group"
                 >
                     <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-sm group-hover:shadow-md transition-shadow">
@@ -224,7 +213,7 @@
                             <path d="M3,3V21H21V3H3M18,18H6V6H18V18Z"/>
                         </svg>
                     </div>
-                    <span class="font-medium">Laporan</span>
+                    <span class="font-medium">Berita</span>
                 </a>
             </div>
             @endcan
@@ -266,6 +255,7 @@
             <div class="rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 p-4">
                 <div class="flex items-center space-x-3">
                     <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+                       <a href="{{ route('pengaduan.index') }}">
                         <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,17A1.5,1.5 0 0,1 10.5,15.5A1.5,1.5 0 0,1 12,14A1.5,1.5 0 0,1 13.5,15.5A1.5,1.5 0 0,1 12,17M14.5,10.5C14.5,9 13.5,8 12,8C10.5,8 9.5,9 9.5,10.5"/>
                         </svg>
@@ -274,6 +264,7 @@
                         <p class="text-sm font-medium text-gray-800">Butuh Bantuan?</p>
                         <p class="text-xs text-gray-600">Hubungi admin untuk dukungan</p>
                     </div>
+                </a>
                 </div>
             </div>
         </div>

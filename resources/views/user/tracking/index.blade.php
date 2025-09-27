@@ -1,15 +1,13 @@
 <x-layout>
     <div x-data="trackingData()" class="min-h-screen bg-gray-50 py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Header Section -->
             <div class="mb-8">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h1 class="text-3xl font-bold text-gray-900">Tracking Surat</h1>
+                        <h1 class="text-3xl font-bold text-gray-900">Surat Masuk</h1>
                         <p class="mt-2 text-gray-600">Lacak status semua surat yang telah diajukan dengan mudah dan cepat</p>
                     </div>
                     <div class="flex items-center space-x-4">
-                        <!-- Status Summary Cards -->
                         <div class="bg-yellow-100 rounded-lg px-4 py-2">
                             <div class="text-yellow-800 text-sm font-medium">Diproses</div>
                             <div class="text-yellow-900 text-2xl font-bold">{{ $semuaSurat->where('status', 'diproses')->count() }}</div>
@@ -26,7 +24,6 @@
                 </div>
             </div>
 
-            <!-- Search and Filter Section -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
@@ -45,9 +42,9 @@
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                         >
                             <option value="">Semua Status</option>
-                            <option value="Disetujui">Disetujui</option>
-                            <option value="Dalam Proses">Dalam Proses</option>
-                            <option value="Ditolak">Ditolak</option>
+                            <option value="diproses">Dalam Proses</option>
+                            <option value="selesai">Selesai</option>
+                            <option value="ditolak">Ditolak</option>
                         </select>
                     </div>
                     <div>
@@ -57,15 +54,15 @@
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                         >
                             <option value="">Semua Jenis</option>
-                            <option value="Surat Keterangan Menikah">Surat Keterangan Menikah</option>
-                            <option value="Surat Keterangan Kematian">Surat Keterangan Kematian</option>
-                            <option value="Surat Keterangan Lahir">Surat Keterangan Lahir</option>
+                            {{-- Opsi filter jenis surat bisa Anda tambahkan di sini jika perlu --}}
+                            @foreach ($opsiJenisSurat as $jenis)
+                                <option value="{{ $jenis }}">{{ $jenis }}</option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
             </div>
 
-            <!-- Table Section -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-900">Daftar Surat</h3>
@@ -89,7 +86,7 @@
                                 @foreach ($semuaSurat as $surat)
                                     <tr 
                                         class="hover:bg-gray-50 transition-colors duration-200"
-                                        x-show="filterSurat('{{ $surat->jenis_surat }}', '{{ $surat->status }}', '{{ $surat->nomor_surat ?? '' }}')"
+                                        x-show="filterSurat('{{ $surat->jenis_surat }}', '{{ $surat->status }}', '{{ $surat->nomor_surat ?? '' }}', '{{ $surat->nama ?? $surat->nama_almarhum ?? $surat->nama_lengkap ?? '' }}')"
                                         x-transition:enter="transition ease-out duration-300"
                                         x-transition:enter-start="opacity-0 transform translate-y-2"
                                         x-transition:enter-end="opacity-100 transform translate-y-0"
@@ -99,27 +96,6 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center">
-                                                <div class="flex-shrink-0 h-10 w-10">
-                                                    <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                                        @if($surat->jenis_surat == 'Surat Keterangan Menikah')
-                                                            <svg class="h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                                                            </svg>
-                                                        @elseif($surat->jenis_surat == 'Surat Keterangan Kematian')
-                                                            <svg class="h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                                            </svg>
-                                                        @elseif($surat->jenis_surat == 'Surat Keterangan Lahir')
-                                                            <svg class="h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"></path>
-                                                            </svg>
-                                                        @else
-                                                            <svg class="h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                                            </svg>
-                                                        @endif
-                                                    </div>
-                                                </div>
                                                 <div class="ml-4">
                                                     <div class="text-sm font-medium text-gray-900">{{ $surat->jenis_surat }}</div>
                                                 </div>
@@ -158,37 +134,51 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
-                                                @if($surat->status == 'Disetujui') 
-                                                    bg-green-100 text-green-800 ring-1 ring-green-600/20
-                                                @elseif($surat->status == 'Ditolak') 
-                                                    bg-red-100 text-red-800 ring-1 ring-red-600/20
-                                                @else 
-                                                    bg-yellow-100 text-yellow-800 ring-1 ring-yellow-600/20
-                                                @endif">
-                                                <div class="w-1.5 h-1.5 mr-2 rounded-full
-                                                    @if($surat->status == 'Disetujui') bg-green-600
-                                                    @elseif($surat->status == 'Ditolak') bg-red-600
-                                                    @else bg-yellow-600 @endif">
-                                                </div>
+                                             <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium capitalize
+                                                @switch($surat->status)
+                                                    @case('selesai')
+                                                        bg-green-100 text-green-800 ring-1 ring-green-600/20
+                                                        @break
+                                                    @case('ditolak')
+                                                        bg-red-100 text-red-800 ring-1 ring-red-600/20
+                                                        @break
+                                                    @default
+                                                        bg-yellow-100 text-yellow-800 ring-1 ring-yellow-600/20
+                                                @endswitch">
                                                 {{ $surat->status }}
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            <div class="flex items-center space-x-2">
-                                                <button class="text-blue-600 hover:text-blue-800 transition-colors duration-200" title="Lihat Detail">
-                                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                                    </svg>
-                                                </button>
-                                                @if($surat->status == 'Disetujui' && $surat->nomor_surat)
-                                                    <button class="text-green-600 hover:text-green-800 transition-colors duration-200" title="Download">
-                                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                                        </svg>
-                                                    </button>
+                                            <div class="flex items-center space-x-3">
+                                                
+                                                {{-- Tombol Lihat Detail (Show) --}}
+                                                <a href="{{ route($surat->show_route_name, $surat->id) }}" class="text-blue-600 hover:text-blue-800 transition-colors duration-200" title="Lihat Detail">
+                                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                                </a>
+                                
+                                                {{-- Tombol Edit, HANYA MUNCUL jika status 'diproses' --}}
+                                                @if($surat->status == 'diproses')
+                                                    <a href="{{ route($surat->edit_route_name, $surat->id) }}" class="text-yellow-600 hover:text-yellow-800 transition-colors duration-200" title="Edit Surat">
+                                                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                                    </a>
                                                 @endif
+                                                
+                                                @if($surat->status != 'selesai')
+                                                <form action="{{ route($surat->destroy_route_name, $surat->id) }}" method="POST" class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-red-600 hover:text-red-800 transition-colors duration-200" title="Hapus Surat" onclick="return confirm('Apakah Anda yakin ingin menghapus surat ini? Data yang dihapus tidak dapat dikembalikan.')">
+                                                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                    </button>
+                                                </form>
+                                                @endif
+                                                {{-- Tombol Download, HANYA MUNCUL jika status 'selesai' --}}
+                                                @if($surat->status == 'selesai' && $surat->nomor_surat)
+                                                    <a href="#" class="text-green-600 hover:text-green-800 transition-colors duration-200" title="Download">
+                                                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                                    </a>
+                                                @endif
+                                
                                             </div>
                                         </td>
                                     </tr>
@@ -198,9 +188,7 @@
                     </div>
                 @else
                     <div class="text-center py-16">
-                        <svg class="mx-auto h-16 w-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
+                        <svg class="mx-auto h-16 w-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                         <h3 class="mt-4 text-lg font-medium text-gray-900">Belum ada data surat</h3>
                         <p class="mt-2 text-sm text-gray-500">Belum ada surat yang diajukan saat ini.</p>
                     </div>
@@ -216,26 +204,15 @@
                 statusFilter: '',
                 jenisFilter: '',
                 
-                filterSurat(jenis, status, nomor) {
-                    // Filter berdasarkan pencarian
-                    if (this.searchQuery) {
-                        const query = this.searchQuery.toLowerCase();
-                        const searchMatch = jenis.toLowerCase().includes(query) || 
-                                          (nomor && nomor.toLowerCase().includes(query));
-                        if (!searchMatch) return false;
-                    }
-                    
-                    // Filter berdasarkan status
-                    if (this.statusFilter && status !== this.statusFilter) {
-                        return false;
-                    }
-                    
-                    // Filter berdasarkan jenis
-                    if (this.jenisFilter && jenis !== this.jenisFilter) {
-                        return false;
-                    }
-                    
-                    return true;
+                filterSurat(jenis, status, nomor, nama) {
+                    const query = this.searchQuery.toLowerCase();
+                    const statusMatch = !this.statusFilter || status === this.statusFilter;
+                    const jenisMatch = !this.jenisFilter || jenis === this.jenisFilter;
+                    const searchMatch = !this.searchQuery || 
+                                        nomor.toLowerCase().includes(query) || 
+                                        nama.toLowerCase().includes(query);
+
+                    return statusMatch && jenisMatch && searchMatch;
                 }
             }
         }

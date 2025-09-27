@@ -8,6 +8,8 @@ use App\Models\CalonPengantin;
 use App\Models\OrangTuaCalonPengantin;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str; 
+use Illuminate\Validation\Rule;
 
 class KeteranganMenikahController extends Controller
 {
@@ -36,7 +38,7 @@ class KeteranganMenikahController extends Controller
         'status_perkawinan_pria' => 'required|in:Belum Menikah,Cerai Hidup,Cerai Mati',
         'status_perkawinan_wanita' => 'required|in:Belum Menikah,Cerai Hidup,Cerai Mati',
         
-        // Validasi data pria
+        
         'pria.nama' => 'required|string|max:255',
         'pria.nik' => 'required|string|size:16|unique:calon_pengantin,nik',
         'pria.tempat_lahir' => 'required|string|max:255',
@@ -46,7 +48,7 @@ class KeteranganMenikahController extends Controller
         'pria.kewarganegaraan' => 'required|string|max:255',
         'pria.alamat' => 'required|string',
         
-        // Validasi orang tua pria
+        
         'pria.ayah_nama' => 'required|string|max:255',
         'pria.ayah_nik' => 'required|string|size:16',
         'pria.ayah_tempat_lahir' => 'required|string|max:255',
@@ -65,7 +67,7 @@ class KeteranganMenikahController extends Controller
         'pria.ibu_kewarganegaraan' => 'required|string|max:255',
         'pria.ibu_alamat' => 'required|string',
         
-        // Validasi data wanita
+        
         'wanita.nama' => 'required|string|max:255',
         'wanita.nik' => 'required|string|size:16|unique:calon_pengantin,nik',
         'wanita.tempat_lahir' => 'required|string|max:255',
@@ -75,7 +77,7 @@ class KeteranganMenikahController extends Controller
         'wanita.kewarganegaraan' => 'required|string|max:255',
         'wanita.alamat' => 'required|string',
         
-        // Validasi orang tua wanita
+        
         'wanita.ayah_nama' => 'required|string|max:255',
         'wanita.ayah_nik' => 'required|string|size:16',
         'wanita.ayah_tempat_lahir' => 'required|string|max:255',
@@ -116,16 +118,16 @@ class KeteranganMenikahController extends Controller
         'wanita.ibu_agama.in' => 'Agama ibu calon pengantin wanita tidak valid.',
         'status_perkawinan_pria.in' => 'Status perkawinan pria tidak valid.',
         'status_perkawinan_wanita.in' => 'Status perkawinan wanita tidak valid.',
-        
+
     ]);
 
     DB::beginTransaction();
 
     try {
-        // Generate nomor surat
+        
         $nomorSurat = 'SKM-' . date('Y') . '-' . str_pad(SuratKeteranganMenikah::count() + 1, 4, '0', STR_PAD_LEFT);
 
-        // Simpan surat keterangan menikah
+        
         $suratKeteranganMenikah = SuratKeteranganMenikah::create([
             'user_id' => Auth::id(),
             'nomor_surat' => $nomorSurat,
@@ -134,7 +136,7 @@ class KeteranganMenikahController extends Controller
             'status' => 'diproses',
         ]);
 
-        // Simpan data calon pengantin pria
+        
         $calonPria = CalonPengantin::create([
             'surat_keterangan_menikah_id' => $suratKeteranganMenikah->id,
             'nama' => $request->pria['nama'],
@@ -148,7 +150,7 @@ class KeteranganMenikahController extends Controller
             'alamat' => $request->pria['alamat'],
         ]);
 
-        // Simpan data orang tua pria
+        
         OrangTuaCalonPengantin::create([
             'calon_pengantin_id' => $calonPria->id,
             'jenis_orang_tua' => 'ayah',
@@ -175,7 +177,7 @@ class KeteranganMenikahController extends Controller
             'alamat' => $request->pria['ibu_alamat'],
         ]);
 
-        // Simpan data calon pengantin wanita
+        
         $calonWanita = CalonPengantin::create([
             'surat_keterangan_menikah_id' => $suratKeteranganMenikah->id,
             'nama' => $request->wanita['nama'],
@@ -189,7 +191,7 @@ class KeteranganMenikahController extends Controller
             'alamat' => $request->wanita['alamat'],
         ]);
 
-        // Simpan data orang tua wanita
+        
         OrangTuaCalonPengantin::create([
             'calon_pengantin_id' => $calonWanita->id,
             'jenis_orang_tua' => 'ayah',
@@ -233,32 +235,184 @@ class KeteranganMenikahController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+     public function show(SuratKeteranganMenikah $keterangan_menikah)
     {
-        return view('user.keterangan_menikah.show');
+        
+        if ($keterangan_menikah->user_id !== Auth::id()) {
+            abort(403, 'AKSES DITOLAK');
+        }
+
+        
+        
+        $keterangan_menikah->load(['calonPria.ayah', 'calonPria.ibu', 'calonWanita.ayah', 'calonWanita.ibu']);
+
+        return view('user.keterangan_menikah.show', ['menikah' => $keterangan_menikah]);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Tampilkan form untuk mengedit surat.
      */
-    public function edit(string $id)
+    public function edit(SuratKeteranganMenikah $keterangan_menikah)
     {
-        return view('user.keterangan_menikah.edit');
+        
+        if ($keterangan_menikah->user_id !== Auth::id()) {
+            abort(403, 'AKSES DITOLAK');
+        }
+        
+        
+        if ($keterangan_menikah->status !== 'diproses') {
+            return redirect()->route('surat.tracking')->with('error', 'Surat yang sudah diproses atau selesai tidak dapat diedit.');
+        }
+
+        
+        $keterangan_menikah->load(['calonPria.ayah', 'calonPria.ibu', 'calonWanita.ayah', 'calonWanita.ibu']);
+
+        return view('user.keterangan_menikah.edit', ['menikah' => $keterangan_menikah]);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Perbarui data surat di database.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, SuratKeteranganMenikah $keterangan_menikah)
     {
-        //
+        
+        if ($keterangan_menikah->user_id !== Auth::id()) {
+            abort(403, 'AKSES DITOLAK');
+        }
+
+        
+        
+        $validatedData = $request->validate([
+            'status_perkawinan_pria' => 'required|in:Belum Menikah,Cerai Hidup,Cerai Mati',
+            'status_perkawinan_wanita' => 'required|in:Belum Menikah,Cerai Hidup,Cerai Mati',
+            
+            
+            'pria.nama' => 'required|string|max:255',
+            'pria.nik' => ['required', 'string', 'size:16', Rule::unique('calon_pengantin', 'nik')->ignore($keterangan_menikah->calonPria->id)],
+            'pria.tempat_lahir' => 'required|string|max:255',
+            'pria.tanggal_lahir' => 'required|date|before:today',
+            'pria.agama' => 'required|in:Islam,Kristen,Katolik,Hindu,Buddha,Konghucu',
+            'pria.pekerjaan' => 'required|string|max:255',
+            'pria.kewarganegaraan' => 'required|string|max:255',
+            'pria.alamat' => 'required|string',
+            
+            
+            'pria.ayah_nama' => 'required|string|max:255',
+            'pria.ayah_nik' => 'required|string|size:16',
+            'pria.ayah_tempat_lahir' => 'required|string|max:255',
+            'pria.ayah_tanggal_lahir' => 'required|date|before:today',
+            'pria.ayah_agama' => 'required|in:Islam,Kristen,Katolik,Hindu,Buddha,Konghucu',
+            'pria.ayah_pekerjaan' => 'required|string|max:255',
+            'pria.ayah_kewarganegaraan' => 'required|string|max:255',
+            'pria.ayah_alamat' => 'required|string',
+            
+            'pria.ibu_nama' => 'required|string|max:255',
+            'pria.ibu_nik' => 'required|string|size:16',
+            'pria.ibu_tempat_lahir' => 'required|string|max:255',
+            'pria.ibu_tanggal_lahir' => 'required|date|before:today',
+            'pria.ibu_agama' => 'required|in:Islam,Kristen,Katolik,Hindu,Buddha,Konghucu',
+            'pria.ibu_pekerjaan' => 'required|string|max:255',
+            'pria.ibu_kewarganegaraan' => 'required|string|max:255',
+            'pria.ibu_alamat' => 'required|string',
+            
+            
+            'wanita.nama' => 'required|string|max:255',
+            'wanita.nik' => ['required', 'string', 'size:16', Rule::unique('calon_pengantin', 'nik')->ignore($keterangan_menikah->calonWanita->id)],
+            'wanita.tempat_lahir' => 'required|string|max:255',
+            'wanita.tanggal_lahir' => 'required|date|before:today',
+            'wanita.agama' => 'required|in:Islam,Kristen,Katolik,Hindu,Buddha,Konghucu',
+            'wanita.pekerjaan' => 'required|string|max:255',
+            'wanita.kewarganegaraan' => 'required|string|max:255',
+            'wanita.alamat' => 'required|string',
+            
+            
+            'wanita.ayah_nama' => 'required|string|max:255',
+            'wanita.ayah_nik' => 'required|string|size:16',
+            'wanita.ayah_tempat_lahir' => 'required|string|max:255',
+            'wanita.ayah_tanggal_lahir' => 'required|date|before:today',
+            'wanita.ayah_agama' => 'required|in:Islam,Kristen,Katolik,Hindu,Buddha,Konghucu',
+            'wanita.ayah_pekerjaan' => 'required|string|max:255',
+            'wanita.ayah_kewarganegaraan' => 'required|string|max:255',
+            'wanita.ayah_alamat' => 'required|string',
+            
+            'wanita.ibu_nama' => 'required|string|max:255',
+            'wanita.ibu_nik' => 'required|string|size:16',
+            'wanita.ibu_tempat_lahir' => 'required|string|max:255',
+            'wanita.ibu_tanggal_lahir' => 'required|date|before:today',
+            'wanita.ibu_agama' => 'required|in:Islam,Kristen,Katolik,Hindu,Buddha,Konghucu',
+            'wanita.ibu_pekerjaan' => 'required|string|max:255',
+            'wanita.ibu_kewarganegaraan' => 'required|string|max:255',
+            'wanita.ibu_alamat' => 'required|string',
+        ]);
+
+        
+        
+        DB::beginTransaction();
+        try {
+            
+            $keterangan_menikah->update($request->only(['status_perkawinan_pria', 'status_perkawinan_wanita']));
+            
+            
+            $priaData = $request->pria;
+            $wanitaData = $request->wanita;
+
+            
+            $keterangan_menikah->calonPria->update([
+                'nama' => $priaData['nama'], 'nik' => $priaData['nik'], 'tempat_lahir' => $priaData['tempat_lahir'], 'tanggal_lahir' => $priaData['tanggal_lahir'], 'agama' => $priaData['agama'], 'pekerjaan' => $priaData['pekerjaan'], 'kewarganegaraan' => $priaData['kewarganegaraan'], 'alamat' => $priaData['alamat'],
+            ]);
+
+            
+            $keterangan_menikah->calonPria->ayah->update([
+                'nama' => $priaData['ayah_nama'], 'nik' => $priaData['ayah_nik'], 'tempat_lahir' => $priaData['ayah_tempat_lahir'], 'tanggal_lahir' => $priaData['ayah_tanggal_lahir'], 'agama' => $priaData['ayah_agama'], 'pekerjaan' => $priaData['ayah_pekerjaan'], 'kewarganegaraan' => $priaData['ayah_kewarganegaraan'], 'alamat' => $priaData['ayah_alamat'],
+            ]);
+            $keterangan_menikah->calonPria->ibu->update([
+                'nama' => $priaData['ibu_nama'], 'nik' => $priaData['ibu_nik'], 'tempat_lahir' => $priaData['ibu_tempat_lahir'], 'tanggal_lahir' => $priaData['ibu_tanggal_lahir'], 'agama' => $priaData['ibu_agama'], 'pekerjaan' => $priaData['ibu_pekerjaan'], 'kewarganegaraan' => $priaData['ibu_kewarganegaraan'], 'alamat' => $priaData['ibu_alamat'],
+            ]);
+
+            
+            $keterangan_menikah->calonWanita->update([
+                'nama' => $wanitaData['nama'], 'nik' => $wanitaData['nik'], 'tempat_lahir' => $wanitaData['tempat_lahir'], 'tanggal_lahir' => $wanitaData['tanggal_lahir'], 'agama' => $wanitaData['agama'], 'pekerjaan' => $wanitaData['pekerjaan'], 'kewarganegaraan' => $wanitaData['kewarganegaraan'], 'alamat' => $wanitaData['alamat'],
+            ]);
+            
+            
+            $keterangan_menikah->calonWanita->ayah->update([
+                'nama' => $wanitaData['ayah_nama'], 'nik' => $wanitaData['ayah_nik'], 'tempat_lahir' => $wanitaData['ayah_tempat_lahir'], 'tanggal_lahir' => $wanitaData['ayah_tanggal_lahir'], 'agama' => $wanitaData['ayah_agama'], 'pekerjaan' => $wanitaData['ayah_pekerjaan'], 'kewarganegaraan' => $wanitaData['ayah_kewarganegaraan'], 'alamat' => $wanitaData['ayah_alamat'],
+            ]);
+            $keterangan_menikah->calonWanita->ibu->update([
+                'nama' => $wanitaData['ibu_nama'], 'nik' => $wanitaData['ibu_nik'], 'tempat_lahir' => $wanitaData['ibu_tempat_lahir'], 'tanggal_lahir' => $wanitaData['ibu_tanggal_lahir'], 'agama' => $wanitaData['ibu_agama'], 'pekerjaan' => $wanitaData['ibu_pekerjaan'], 'kewarganegaraan' => $wanitaData['ibu_kewarganegaraan'], 'alamat' => $wanitaData['ibu_alamat'],
+            ]);
+
+            DB::commit(); 
+
+            return redirect()->route('surat.tracking')->with('success', 'Data Surat Keterangan Menikah berhasil diperbarui.');
+
+        } catch (\Exception $e) {
+            DB::rollBack(); 
+            
+            return back()->with('error', 'Terjadi kesalahan saat memperbarui data. Silakan coba lagi.')->withInput();
+        }
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Hapus data surat dari database.
      */
-    public function destroy(string $id)
+    public function destroy(SuratKeteranganMenikah $keterangan_menikah)
     {
-        //
+        
+        if ($keterangan_menikah->user_id !== Auth::id()) {
+            abort(403, 'AKSES DITOLAK');
+        }
+        
+        
+        if ($keterangan_menikah->status === 'selesai') {
+            return back()->with('error', 'Surat yang sudah selesai tidak dapat dihapus.');
+        }
+
+        
+        
+        
+        $keterangan_menikah->delete();
+
+        return redirect()->route('surat.tracking')->with('success', 'Surat Keterangan Menikah berhasil dihapus.');
     }
 }

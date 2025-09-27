@@ -54,32 +54,54 @@ class KeteranganLahirController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(SuratKeteranganLahir $keterangan_lahir)
     {
-        return view('user.keterangan_lahir.show');
+        if ($keterangan_lahir->user_id !== Auth::id()) {
+            abort(403, 'AKSES DITOLAK');
+        }
+        return view('user.keterangan_lahir.show', compact('keterangan_lahir'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit(SuratKeteranganLahir $keterangan_lahir)
     {
-        return view('user.keterangan_lahir.edit');
+        if ($keterangan_lahir->user_id !== Auth::id()) {
+            abort(403, 'AKSES DITOLAK');
+        }
+        if ($keterangan_lahir->status !== 'diproses') {
+            return redirect()->route('surat.tracking')->with('error', 'Surat yang sudah diproses tidak dapat diedit.');
+        }
+        return view('user.keterangan_lahir.edit', compact('keterangan_lahir'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, SuratKeteranganLahir $keterangan_lahir)
     {
-        //
+        if ($keterangan_lahir->user_id !== Auth::id()) {
+            abort(403, 'AKSES DITOLAK');
+        }
+        $validatedData = $request->validate([
+            'nama_lengkap' => ['required', 'string', 'max:255'],
+            'jenis_kelamin' => ['required', 'in:Laki-laki,Perempuan'],
+            'tempat_lahir' => ['required', 'string', 'max:255'],
+            'tanggal_lahir' => ['required', 'date'],
+            'waktu_lahir' => ['required'],
+            'agama' => ['required', 'string', 'max:255'],
+            'nama_ibu' => ['required', 'string', 'max:255'],
+            'nama_ayah' => ['required', 'string', 'max:255'],
+            'alamat' => ['required', 'string'],
+        ]);
+        $keterangan_lahir->update($validatedData);
+        return redirect()->route('surat.tracking')->with('success', 'Data Surat Keterangan Lahir berhasil diperbarui!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(SuratKeteranganLahir $keterangan_lahir)
     {
-        //
+        if ($keterangan_lahir->user_id !== Auth::id()) {
+            abort(403, 'AKSES DITOLAK');
+        }
+        if ($keterangan_lahir->status === 'selesai') {
+            return back()->with('error', 'Surat yang sudah selesai tidak dapat dihapus.');
+        }
+        $keterangan_lahir->delete();
+        return redirect()->route('surat.tracking')->with('success', 'Surat Keterangan Lahir berhasil dihapus.');
     }
 }

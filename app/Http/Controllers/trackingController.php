@@ -10,69 +10,47 @@ use App\Models\SuratPengantar;
 use App\Models\SuratSkm;
 use App\Models\SuratSktm;
 use App\Models\SuratSku;
+use Illuminate\Support\Facades\Auth;
 
 class trackingController extends Controller
 {
     public function index()
     {
-        // 2. Ambil data dari setiap model dan tambahkan atribut 'jenis_surat'
-        // Ini agar kita bisa menampilkan nama layanannya di tabel
-        $domisili = SuratDomisili::all()->map(function ($item) {
-            $item->jenis_surat = 'Surat Domisili';
-            return $item;
-        });
+        $userId = Auth::id();
+        if (!$userId) {
+            return redirect()->route('login');
+        }
 
-        $kelahiran = SuratKeteranganLahir::all()->map(function ($item) {
-            $item->jenis_surat = 'Surat Keterangan Lahir';
-            return $item;
-        });
+        // Closure untuk memetakan data surat
+        $mapSurat = function ($surat, $jenis, $editRoute, $showRoute, $destroyRoute) {
+            $surat->jenis_surat = $jenis;
+            $surat->edit_route_name = $editRoute;
+            $surat->show_route_name = $showRoute;
+            $surat->destroy_route_name = $destroyRoute; // <-- Tambahan baru
+            return $surat;
+        };
 
-        // Untuk surat menikah, kita eager load relasi calonPria dan calonWanita
-        // agar tidak terjadi N+1 query problem di view
-        $menikah = SuratKeteranganMenikah::with(['calonPria', 'calonWanita'])->get()->map(function ($item) {
-            $item->jenis_surat = 'Surat Keterangan Menikah';
-            return $item;
-        });
-
-        $pengantar = SuratPengantar::all()->map(function ($item) {
-            $item->jenis_surat = 'Surat Pengantar';
-            return $item;
-        });
-
-        $kematian = SuratSkm::all()->map(function ($item) {
-            $item->jenis_surat = 'Surat Keterangan Kematian';
-            return $item;
-        });
-
-        $sktm = SuratSktm::all()->map(function ($item) {
-            $item->jenis_surat = 'Surat Keterangan Tidak Mampu';
-            return $item;
-        });
-
-        $sku = SuratSku::all()->map(function ($item) {
-            $item->jenis_surat = 'Surat Keterangan Usaha';
-            return $item;
-        });
-
-        // 3. Gabungkan semua data menjadi satu koleksi (collection)
+        // Memetakan setiap jenis surat
+        $domisili  = SuratDomisili::where('user_id', $userId)->get()->map(fn($s) => $mapSurat($s, 'Surat Domisili', 'domisili.edit', 'domisili.show', 'domisili.destroy'));
+        $kelahiran = SuratKeteranganLahir::where('user_id', $userId)->get()->map(fn($s) => $mapSurat($s, 'Surat Keterangan Lahir', 'keterangan_lahir.edit', 'keterangan_lahir.show', 'keterangan_lahir.destroy'));
+        $menikah   = SuratKeteranganMenikah::where('user_id', $userId)->with(['calonPria', 'calonWanita'])->get()->map(fn($s) => $mapSurat($s, 'Surat Keterangan Menikah', 'keterangan_menikah.edit', 'keterangan_menikah.show', 'keterangan_menikah.destroy'));
+        $pengantar = SuratPengantar::where('user_id', $userId)->get()->map(fn($s) => $mapSurat($s, 'Surat Pengantar', 'surat_pengantar.edit', 'surat_pengantar.show', 'surat_pengantar.destroy'));
+        $kematian  = SuratSkm::where('user_id', $userId)->get()->map(fn($s) => $mapSurat($s, 'Surat Keterangan Kematian', 'skm.edit', 'skm.show', 'skm.destroy'));
+        $sktm      = SuratSktm::where('user_id', $userId)->get()->map(fn($s) => $mapSurat($s, 'Surat Keterangan Tidak Mampu', 'sktm.edit', 'sktm.show', 'sktm.destroy'));
+        $sku       = SuratSku::where('user_id', $userId)->get()->map(fn($s) => $mapSurat($s, 'Surat Keterangan Usaha', 'sku.edit', 'sku.show', 'sku.destroy'));
+        
+        // Menggabungkan dan mengurutkan
         $semuaSurat = collect([])
-            ->concat($domisili)
-            ->concat($kelahiran)
-            ->concat($menikah)
-            ->concat($pengantar)
-            ->concat($kematian)
-            ->concat($sktm)
-            ->concat($sku);
+            ->merge($domisili)->merge($kelahiran)->merge($menikah)
+            ->merge($pengantar)->merge($kematian)->merge($sktm)->merge($sku)
+            ->sortByDesc('created_at');
 
-        // 4. Urutkan koleksi gabungan berdasarkan tanggal dibuat (yang terbaru di atas)
-        $suratTerurut = $semuaSurat->sortByDesc('created_at');
-        $opsiJenisSurat = $suratTerurut->pluck('jenis_surat')->unique()->sort()->values();
+        $opsiJenisSurat = $semuaSurat->pluck('jenis_surat')->unique()->sort()->values();
 
-        // 5. Kirim data yang sudah terurut ke view
+        // Mengirim data ke view
         return view('user.tracking.index', [
-            'semuaSurat' => $suratTerurut,
+            'semuaSurat' => $semuaSurat,
             'opsiJenisSurat' => $opsiJenisSurat,
-            
         ]);
     }
 }

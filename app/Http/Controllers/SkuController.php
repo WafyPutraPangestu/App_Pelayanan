@@ -6,6 +6,7 @@ use App\Models\SuratSku;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class SkuController extends Controller
 {
@@ -56,32 +57,56 @@ class SkuController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(SuratSku $sku)
     {
-        return view('user.sku.show');
+        if ($sku->user_id !== Auth::id()) {
+            abort(403, 'AKSES DITOLAK');
+        }
+        return view('user.sku.show', compact('sku'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit(SuratSku $sku)
     {
-        return view('user.sku.edit');
+        if ($sku->user_id !== Auth::id()) {
+            abort(403, 'AKSES DITOLAK');
+        }
+        if ($sku->status !== 'diproses') {
+            return redirect()->route('surat.tracking')->with('error', 'Surat yang sudah diproses tidak dapat diedit.');
+        }
+        return view('user.sku.edit', compact('sku'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, SuratSku $sku)
     {
-        //
+        if ($sku->user_id !== Auth::id()) {
+            abort(403, 'AKSES DITOLAK');
+        }
+        $validatedData = $request->validate([
+            'nama' => ['required', 'string', 'max:255'],
+            'nik' => ['required', 'string', 'digits:16', Rule::unique('surat_sku')->ignore($sku->id)],
+            'tempat_lahir' => ['required', 'string', 'max:255'],
+            'tanggal_lahir' => ['required', 'date'],
+            'jenis_kelamin' => ['required', 'in:Laki-laki,Perempuan'],
+            'agama' => ['required', 'string', 'max:255'],
+            'kewarganegaraan' => ['required', 'string', 'max:255'],
+            'nama_usaha' => ['required', 'string', 'max:255'],
+            'jenis_usaha' => ['required', 'string', 'max:255'],
+            'alamat_usaha' => ['required', 'string'],
+        ]);
+
+        $sku->update($validatedData);
+        return redirect()->route('surat.tracking')->with('success', 'Data Surat Keterangan Usaha berhasil diperbarui!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(SuratSku $sku)
     {
-        //
+        if ($sku->user_id !== Auth::id()) {
+            abort(403, 'AKSES DITOLAK');
+        }
+        if ($sku->status === 'selesai') {
+            return back()->with('error', 'Surat yang sudah selesai tidak dapat dihapus.');
+        }
+        $sku->delete();
+        return redirect()->route('surat.tracking')->with('success', 'Surat Keterangan Usaha berhasil dihapus.');
     }
 }

@@ -104,33 +104,118 @@ class SkmController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(SuratSkm $skm)
     {
-        return view('user.skm.show');
+        // Keamanan: pastikan user hanya bisa melihat surat miliknya
+        if ($skm->user_id !== Auth::id()) {
+            abort(403, 'AKSES DITOLAK');
+        }
+
+        // Muat relasi agar data pelapor tersedia di view
+        $skm->load('pelaporKematian');
+
+        return view('user.skm.show', compact('skm'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(SuratSkm $skm)
     {
+        // Pastikan user hanya bisa edit surat miliknya
+        if ($skm->user_id !== Auth::id()) {
+            abort(403, 'AKSES DITOLAK');
+        }
+
+        // Pastikan surat hanya bisa diedit jika statusnya 'diproses'
+        if ($skm->status !== 'diproses') {
+            return redirect()->route('surat.tracking')->with('error', 'Surat yang sudah diproses tidak dapat diedit.');
+        }
         
-        return view('user.skm.edit');
+        // Eager load relasi pelaporKematian agar bisa diakses di view
+        $skm->load('pelaporKematian');
+
+        return view('user.skm.edit', compact('skm'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, SuratSkm $skm)
     {
-        //
+        // Pastikan user hanya bisa update surat miliknya
+        if ($skm->user_id !== Auth::id()) {
+            abort(403, 'AKSES DITOLAK');
+        }
+
+        $validatedData = $request->validate([
+            'nama_almarhum' => ['required', 'string', 'max:255'],
+            'nik_almarhum' => ['required', 'string', 'digits:16'],
+            'tempat_lahir_almarhum' => ['required', 'string', 'max:255'],
+            'tanggal_lahir_almarhum' => ['required', 'date'],
+            'jenis_kelamin_almarhum' => ['required', 'in:Laki-laki,Perempuan'],
+            'agama_almarhum' => ['required', 'string', 'max:255'],
+            'tanggal_kematian' => ['required', 'date'],
+            'waktu_kematian' => ['required'],
+            'penyebab_kematian' => ['required', 'string', 'max:255'],
+            'alamat_almarhum' => ['required', 'string'],
+            'nama_pelapor' => ['required', 'string', 'max:255'],
+            'nik_pelapor' => ['required', 'string', 'digits:16'],
+            'tempat_lahir_pelapor' => ['required', 'string', 'max:255'],
+            'tanggal_lahir_pelapor' => ['required', 'date'],
+            'jenis_kelamin_pelapor' => ['required', 'in:Laki-laki,Perempuan'],
+            'pekerjaan_pelapor' => ['required', 'string', 'max:255'],
+            'alamat_pelapor' => ['required', 'string'],
+            'hubungan_dengan_almarhum' => ['required', 'string', 'max:255'],
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // 1. Update data di tabel surat_skm
+            $skm->update($validatedData);
+
+            // 2. Update data di tabel pelapor_kematian melalui relasi
+            if ($skm->pelaporKematian) {
+                $skm->pelaporKematian->update($validatedData);
+            }
+
+            DB::commit();
+
+            return redirect()->route('surat.tracking')
+                             ->with('success', 'Data Surat Keterangan Kematian berhasil diperbarui.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Terjadi kesalahan saat memperbarui data. Silakan coba lagi.');
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(SuratSkm $skm)
     {
-        //
+        // Keamanan: pastikan user hanya bisa menghapus surat miliknya
+        if ($skm->user_id !== Auth::id()) {
+            abort(403, 'AKSES DITOLAK');
+        }
+
+        // Logika tambahan: mungkin hanya surat dengan status tertentu yang bisa dihapus
+        if ($skm->status == 'selesai') {
+            return back()->with('error', 'Surat yang sudah selesai tidak dapat dihapus.');
+        }
+
+        try {
+            // Hapus data surat
+            $skm->delete();
+            
+            // Redirect kembali ke halaman tracking dengan pesan sukses
+            return redirect()->route('surat.tracking')
+                             ->with('success', 'Surat berhasil dihapus.');
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan saat menghapus data.');
+        }
     }
 }

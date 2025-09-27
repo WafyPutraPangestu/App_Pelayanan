@@ -6,26 +6,42 @@ use Illuminate\Http\Request;
 use App\Models\Pengaduan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 
 class pengaduanController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        $pengaduans = Pengaduan::with('user')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        $userId = Auth::id();
 
+        // Query dasar untuk pengaduan milik user
+        $query = Pengaduan::where('user_id', $userId);
+
+        // Terapkan filter pencarian jika ada
+        if ($request->has('search') && $request->search != '') {
+            $query->where('judul', 'like', '%' . $request->search . '%');
+        }
+
+        // Terapkan filter status jika ada
+        if ($request->has('status') && $request->status != '') {
+            $query->where('status', $request->status);
+        }
+
+        $pengaduans = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+
+        // Statistik juga hanya untuk user yang login
         $stats = [
-            'total' => Pengaduan::count(),
-            'baru' => Pengaduan::baru()->count(),
-            'diproses' => Pengaduan::diproses()->count(),
-            'selesai' => Pengaduan::selesai()->count(),
+            'total' => Pengaduan::where('user_id', $userId)->count(),
+            'baru' => Pengaduan::where('user_id', $userId)->baru()->count(),
+            'diproses' => Pengaduan::where('user_id', $userId)->diproses()->count(),
+            'selesai' => Pengaduan::where('user_id', $userId)->selesai()->count(),
         ];
 
         return view('user.pengaduan.index', compact('pengaduans', 'stats'));
     }
+
 
 
     public function create()
@@ -76,4 +92,73 @@ class pengaduanController extends Controller
             ->route('pengaduan.index')
             ->with('success', 'Pengaduan berhasil disubmit! Kami akan segera menindaklanjuti pengaduan Anda.');
     }
+    // Di dalam pengaduanController.php
+
+public function show(Pengaduan $pengaduan)
+{
+    // Keamanan: pastikan user hanya bisa melihat pengaduan miliknya
+    if ($pengaduan->user_id !== Auth::id()) {
+        abort(403);
+    }
+    return view('user.pengaduan.show', compact('pengaduan'));
+}
+public function edit(Pengaduan $pengaduan)
+{
+    // Keamanan: Pastikan user hanya bisa mengedit pengaduan miliknya
+    // dan hanya jika statusnya masih 'baru'.
+    if ($pengaduan->user_id !== Auth::id() || $pengaduan->status !== 'baru') {
+        abort(403, 'ANDA TIDAK DAPAT MENGEDIT PENGADUAN INI.');
+    }
+
+    // Siapkan data kategori, sama seperti di method create
+    $categories = [
+        'Surat Domisili' => 'Pengajuan surat keterangan tempat tinggal.',
+        'Surat Keterangan Lahir' => 'Pengajuan surat keterangan kelahiran anak.',
+        'Surat Keterangan Menikah' => 'Pengajuan surat pengantar untuk keperluan menikah.',
+        'Surat Pengantar' => 'Pengajuan surat pengantar untuk berbagai keperluan umum.',
+        'Surat Keterangan Kematian' => 'Pengajuan Surat Keterangan Kematian (SKM).',
+        'Surat Keterangan Tidak Mampu' => 'Pengajuan Surat Keterangan Tidak Mampu (SKTM).',
+        'Surat Keterangan Usaha' => 'Pengajuan Surat Keterangan Usaha (SKU).',
+    ];
+
+    return view('user.pengaduan.edit', compact('pengaduan', 'categories'));
+}
+
+public function update(Request $request, Pengaduan $pengaduan)
+{
+    if ($pengaduan->user_id !== Auth::id() || $pengaduan->status !== 'baru') {
+        abort(403, 'Anda tidak dapat mengedit pengaduan ini.');
+    }
+
+    $request->validate([ 'judul' => 'required|min:5|max:255', /* ... validasi lainnya ... */ ]);
+    
+    $data = $request->only(['judul', 'isi_pengaduan', 'kategori']);
+
+    if ($request->hasFile('lampiran')) {
+        // Hapus lampiran lama jika ada
+        if ($pengaduan->lampiran) {
+            Storage::disk('public')->delete($pengaduan->lampiran);
+        }
+        $data['lampiran'] = $request->file('lampiran')->store('pengaduan', 'public');
+    }
+
+    $pengaduan->update($data);
+    return redirect()->route('pengaduan.index')->with('success', 'Pengaduan berhasil diperbarui!');
+}
+
+public function destroy(Pengaduan $pengaduan)
+{
+    if ($pengaduan->user_id !== Auth::id() || $pengaduan->status !== 'baru') {
+        abort(403, 'Anda tidak dapat menghapus pengaduan ini.');
+    }
+
+    // Hapus lampiran dari storage
+    if ($pengaduan->lampiran) {
+        Storage::disk('public')->delete($pengaduan->lampiran);
+    }
+
+    $pengaduan->delete();
+    return redirect()->route('pengaduan.index')->with('success', 'Pengaduan berhasil dihapus!');
+}
+
 }

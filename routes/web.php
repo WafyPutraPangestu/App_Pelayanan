@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\admin\BeritaController;
+use App\Http\Controllers\admin\DataDashboardController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DomisiliController;
 use App\Http\Controllers\KeteranganLahirController;
@@ -43,8 +45,16 @@ Route::middleware(['auth', 'user'])->group(function () {
     Route::get('surat',[suratController::class, 'index'])->name('surat.index');
     // Pastikan nama method di route sama dengan nama method di controller ('index')
 Route::get('tracking', [TrackingController::class, 'index'])->name('surat.tracking');
-Route::get('pengaduan.index',[pengaduanController::class, 'index'])->name('pengaduan.index');
-Route::get('pengaduan.create', [pengaduanController::class, 'create'])->name('pengaduan.create');
-Route::post('pengaduan.create', [pengaduanController::class, 'store'])->name('pengaduan.store');
 
+});
+
+// Ganti semua route pengaduan Anda dengan ini:
+Route::resource('pengaduan', pengaduanController::class)->middleware(['auth', 'user']);
+
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::resource('dataDashboard', DataDashboardController::class);
+    Route::resource('berita', BeritaController::class)->parameters([
+        'berita' => 'berita'
+    ]);
+    
 });
