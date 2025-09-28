@@ -19,6 +19,7 @@ class DataDashboard extends Model
         'jumlah_laki_laki',
         'jumlah_perempuan',
         'anggaran_apbdes',
+        'file_apbdes',
         'keterangan'
     ];
 
@@ -26,6 +27,7 @@ class DataDashboard extends Model
     {
         return [
             'anggaran_apbdes' => 'decimal:2',
+            
         ];
     }
 

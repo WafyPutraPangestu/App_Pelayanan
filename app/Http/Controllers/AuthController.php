@@ -31,8 +31,8 @@ class AuthController extends Controller
             'role' => 'user',
             'aktif' => true,
         ]);
-        Auth::login($user);
-        return redirect()->route('guest.welcome')->with('success', 'Registration successful!');
+        
+        return redirect()->route('guest.auth.login')->with('success', 'Registration successful!');
     }
     public function login()
     {
@@ -44,10 +44,22 @@ class AuthController extends Controller
             'email' => 'required|string|email',
             'password' => 'required|string',
         ]);
+
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/')->with('success', 'Login successful!');
+
+            $user = Auth::user(); // Ambil data user yang baru saja login
+
+            // Cek role user
+            if ($user->role === 'admin') {
+                // Jika admin, arahkan ke dashboard admin
+                return redirect()->route('dashboard')->with('success', 'Selamat datang kembali, Admin!');
+            } else {
+                // Jika bukan admin (berarti user biasa), arahkan ke dashboard user
+                return redirect()->route('UserDashboard.index')->with('success', 'Login berhasil!');
+            }
         }
+
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ])->onlyInput('email');

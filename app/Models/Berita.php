@@ -55,17 +55,23 @@ class Berita extends Model
     {
         parent::boot();
 
-        static::creating(function ($model) {
-            if (empty($model->slug)) {
-                $model->slug = Str::slug($model->judul);
-            }
+        // Event ini berjalan SETIAP KALI berita baru akan dibuat.
+        static::creating(function ($berita) {
+            // Membuat slug dari judul
+            $berita->slug = Str::slug($berita->judul);
         });
 
-        static::updating(function ($model) {
-            if ($model->isDirty('judul') && empty($model->slug)) {
-                $model->slug = Str::slug($model->judul);
+        // Event ini berjalan SETIAP KALI berita yang sudah ada akan di-update.
+        static::updating(function ($berita) {
+            // Jika judulnya diubah, maka buat ulang slug-nya.
+            if ($berita->isDirty('judul')) {
+                $berita->slug = Str::slug($berita->judul);
             }
         });
+    }
+    public function getRouteKeyName()
+    {
+        return 'slug';
     }
 
     // Mutator untuk auto set tanggal publikasi

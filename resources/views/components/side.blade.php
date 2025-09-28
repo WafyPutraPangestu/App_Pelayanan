@@ -50,14 +50,13 @@
         <!-- Header -->
         <div class="flex items-center justify-between p-6 border-b border-gray-200/50">
             <div class="flex items-center space-x-3">
-                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
-                    <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                    </svg>
+                <!-- Logo menggunakan gambar -->
+                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-lg overflow-hidden">
+                    <img src="{{ asset('storage/logo/logo.png') }}" alt="Logo" class="h-8 w-8 object-contain">
                 </div>
                 <div>
-                    <h2 class="text-lg font-bold text-gray-800">Portal Surat</h2>
-                    <p class="text-xs text-gray-500">Sistem Administrasi</p>
+                    <h2 class="text-lg font-bold text-gray-800">Sistem Pelayanan Desa</h2>
+                    <p class="text-xs text-gray-500">Kabupaten Tangerang</p>
                 </div>
             </div>
             <button 
@@ -84,7 +83,7 @@
                     <div class="flex-1 text-left">
                         <p class="text-sm font-semibold text-gray-800">{{ auth()->user()->name ?? 'User' }}</p>
                         <p class="text-xs text-gray-500">
-                            @can('admin')
+                            @if(auth()->user()->can('admin'))
                                 <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                     Admin
                                 </span>
@@ -92,7 +91,7 @@
                                 <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                     User
                                 </span>
-                            @endcan
+                            @endif
                         </p>
                     </div>
                     <svg class="h-4 w-4 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -113,19 +112,22 @@
                     class="absolute right-0 top-full mt-2 w-48 rounded-xl bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-10"
                 >
                     <div class="p-2">
-                        <a href="#" class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
+                        @if(auth()->user()->can('admin'))
+                        <a href="{{ route('AdminProfiles.index') }}" class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
                             <svg class="mr-3 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                             </svg>
                             Profile
                         </a>
-                        <a href="#" class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
+                        @else
+                        <a href="{{ route('UserProfile.index') }}" class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
                             <svg class="mr-3 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                             </svg>
-                            Settings
+                            Profile
                         </a>
+                        @endif
+                  
                         <hr class="my-2 border-gray-200">
                         <form method="POST" action="{{ route('auth.logout') }}">
                             @csrf
@@ -144,22 +146,21 @@
 
         <!-- Navigation Menu -->
         <nav class="flex-1 p-6 space-y-2">
-            <!-- Dashboard/Home -->
-            <a 
-                href="/"
-                class="flex items-center space-x-3 rounded-xl px-4 py-3 text-gray-700 transition-all duration-200 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-blue-700 group"
-                :class="activeMenu === '/' ? 'bg-gradient-to-r from-blue-50 to-purple-50 text-blue-700 shadow-sm' : ''"
+            <!-- Menu Home sudah dihapus -->
+
+            <!-- User Only Menus -->
+            @if(auth()->check() && auth()->user()->can('user'))
+            <a href="{{ route('UserDashboard.index') }}"
+                class="flex items-center space-x-3 rounded-xl px-4 py-3 text-gray-700 transition-all duration-200 hover:bg-gradient-to-r hover:from-pink-50 hover:to-red-50 hover:text-pink-700 group"
+                :class="activeMenu === '/UserDashboard' ? 'bg-gradient-to-r from-pink-50 to-red-50 text-pink-700 shadow-sm' : ''"
             >
-                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-sm group-hover:shadow-md transition-shadow">
+                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-pink-500 to-red-600 text-white shadow-sm group-hover:shadow-md transition-shadow">
                     <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                     </svg>
                 </div>
-                <span class="font-medium">Home</span>
+                <span class="font-medium">Dashboard</span>
             </a>
-
-            <!-- Surat Menu (Auth Users Only) -->
-            @can('user')
             <a 
                 href="{{ route('surat.index') }}"
                 class="flex items-center space-x-3 rounded-xl px-4 py-3 text-gray-700 transition-all duration-200 hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 hover:text-green-700 group"
@@ -182,15 +183,50 @@
                         <path d="M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,6H13V13H11V6M11,16H13V18H11V16Z"/>
                     </svg>
                 </div>
+                <span class="font-medium">Surat Status</span>
+            </a>
+            <a 
+                href="{{ route('UserSuratMasuk.index') }}"
+                class="flex items-center space-x-3 rounded-xl px-4 py-3 text-gray-700 transition-all duration-200 hover:bg-gradient-to-r hover:from-teal-50 hover:to-cyan-50 hover:text-teal-700 group"
+                :class="activeMenu.includes('UserSuratMasuk') ? 'bg-gradient-to-r from-teal-50 to-cyan-50 text-teal-700 shadow-sm' : ''"
+            >
+                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-teal-500 to-cyan-600 text-white shadow-sm group-hover:shadow-md transition-shadow">
+                    <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4A2,2 0 0,0 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6A2,2 0 0,0 20,4Z"/>
+                    </svg>
+                </div>
                 <span class="font-medium">Surat Masuk</span>
             </a>
-           
-            @endcan
+            <a 
+                href="{{ route('user.berita.index') }}"
+                class="flex items-center space-x-3 rounded-xl px-4 py-3 text-gray-700 transition-all duration-200 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 hover:text-indigo-700 group"
+                :class="activeMenu.includes('UserBerita') ? 'bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 shadow-sm' : ''"
+            >
+                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-sm group-hover:shadow-md transition-shadow">
+                    <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M3,3V21H21V3H3M18,18H6V6H18V18Z"/>
+                    </svg>
+                </div>
+                <span class="font-medium">Berita</span>
+            </a>
+            @endif
 
             <!-- Admin Only Menus -->
-            @can('admin')
+            @if(auth()->check() && auth()->user()->can('admin'))
             <div class="pt-4">
                 <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Admin Panel</p>
+
+                <a 
+                    href="{{ route('dashboard') }}"
+                    class="flex items-center space-x-3 rounded-xl px-4 py-3 text-gray-700 transition-all duration-200 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-blue-700 group"
+                >
+                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-sm group-hover:shadow-md transition-shadow">
+                        <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                        </svg>
+                    </div>
+                    <span class="font-medium">Dashboard</span>
+                </a>
                 
                 <a 
                     href="{{ route('dataDashboard.index') }}"
@@ -234,11 +270,11 @@
                         <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,6H13V13H11V6M11,16H13V18H11V16Z"/>
                         </svg> 
-                        </div>
+                    </div>
                     <span class="font-medium">Surat Masuk</span>
                 </a>
             </div>
-            @endcan
+            @endif
 
             <!-- Guest Menu -->
             @guest
@@ -273,14 +309,11 @@
         </nav>
 
         <!-- Footer -->
-        @can('user')
+        @if(auth()->check() && auth()->user()->can('user'))
         <div class="border-t border-gray-200/50 p-6">
             <div class="rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 p-4">
-                <div class="flex items-center space-x-3">
-                        
-                   
+                <a href="{{ route('pengaduan.index') }}" class="flex items-center space-x-3">
                     <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white">
-                       <a href="{{ route('pengaduan.index') }}">
                         <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,17A1.5,1.5 0 0,1 10.5,15.5A1.5,1.5 0 0,1 12,14A1.5,1.5 0 0,1 13.5,15.5A1.5,1.5 0 0,1 12,17M14.5,10.5C14.5,9 13.5,8 12,8C10.5,8 9.5,9 9.5,10.5"/>
                         </svg>
@@ -291,18 +324,14 @@
                     </div>
                 </a>
             </div>
-            </div>
         </div>
-    </div>
-    @endcan
-        @can('admin')
+        @endif
+
+        @if(auth()->check() && auth()->user()->can('admin'))
         <div class="border-t border-gray-200/50 p-6">
             <div class="rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 p-4">
-                <div class="flex items-center space-x-3">
-                        
-                   
+                <a href="{{ route('pengaduanAdmin.index') }}" class="flex items-center space-x-3">
                     <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white">
-                       <a href="{{ route('pengaduanAdmin.index') }}">
                         <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,17A1.5,1.5 0 0,1 10.5,15.5A1.5,1.5 0 0,1 12,14A1.5,1.5 0 0,1 13.5,15.5A1.5,1.5 0 0,1 12,17M14.5,10.5C14.5,9 13.5,8 12,8C10.5,8 9.5,9 9.5,10.5"/>
                         </svg>
@@ -313,10 +342,9 @@
                     </div>
                 </a>
             </div>
-            </div>
         </div>
+        @endif
     </div>
-    @endcan
 
     <!-- Mobile Menu Button -->
     <button 

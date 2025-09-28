@@ -15,7 +15,8 @@ return new class extends Migration
             $table->integer('jumlah_penduduk');
             $table->integer('jumlah_laki_laki');
             $table->integer('jumlah_perempuan');
-            $table->decimal('anggaran_apbdes', 15, 2)->nullable(); // Dana APBDes untuk wilayah tersebut
+            $table->decimal('anggaran_apbdes', 15, 2)->nullable(); 
+            $table->string('file_apbdes')->nullable(); // Menyimpan path file APBDes
             $table->text('keterangan')->nullable();
             $table->timestamps();
         });

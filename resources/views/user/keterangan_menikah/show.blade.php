@@ -128,14 +128,7 @@
                             </svg>
                             Kembali ke Daftar
                         </a>
-                        @if($menikah->status == 'selesai')
-                        <a href="#" class="px-8 py-3 bg-gradient-to-r from-green-500 to-teal-500 text-white font-semibold rounded-lg hover:from-green-600 hover:to-teal-600 transition-all duration-200 flex items-center justify-center shadow-lg">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                            Download Surat
-                        </a>
-                        @endif
+                        
                     </div>
                 </div>
             </div>

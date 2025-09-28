@@ -14,6 +14,8 @@
         showToast: false,
         toastMessage: '',
         toastType: 'error',
+        fileName: '',
+        filePreview: null,
         
         // Validasi real-time
         validateField(field) {
@@ -56,6 +58,53 @@
         // Format currency input
         formatCurrency(value) {
             return new Intl.NumberFormat('id-ID').format(value);
+        },
+        
+        // Handle file selection
+        handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                this.fileName = file.name;
+                
+                // Validasi tipe file
+                const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+                if (!allowedTypes.includes(file.type)) {
+                    this.errors.file_apbdes = 'Hanya file PDF, DOC, dan DOCX yang diizinkan';
+                    event.target.value = '';
+                    this.fileName = '';
+                    return;
+                }
+                
+                // Validasi ukuran file (max 2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    this.errors.file_apbdes = 'Ukuran file maksimal 2MB';
+                    event.target.value = '';
+                    this.fileName = '';
+                    return;
+                }
+                
+                this.errors.file_apbdes = '';
+                
+                // Preview untuk PDF
+                if (file.type === 'application/pdf') {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        this.filePreview = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    this.filePreview = null;
+                }
+            }
+        },
+        
+        // Clear file selection
+        clearFile() {
+            const fileInput = document.getElementById('file_apbdes');
+            fileInput.value = '';
+            this.fileName = '';
+            this.filePreview = null;
+            this.errors.file_apbdes = '';
         }
     }"
     x-init="
@@ -129,7 +178,7 @@
                     <p class="text-sm text-gray-600 mt-1">Ubah data yang diperlukan</p>
                 </div>
 
-                <form action="{{ route('dataDashboard.update', $dataDashboard->id) }}" method="POST" class="p-6 space-y-6">
+                <form action="{{ route('dataDashboard.update', $dataDashboard->id) }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-6">
                     @csrf
                     @method('PUT')
                     
@@ -290,6 +339,90 @@
                             <p class="text-sm text-red-600">{{ $message }}</p>
                         @enderror
                         <p class="text-xs text-gray-500">Opsional - Dana APBDes yang dialokasikan untuk wilayah ini</p>
+                    </div>
+
+                    <!-- File APBDes -->
+                    <div class="space-y-4">
+                        <div>
+                            <label for="file_apbdes" class="block text-sm font-medium text-gray-700">
+                                File APBDes
+                            </label>
+                            <p class="text-xs text-gray-500 mb-3">Upload file APBDes (PDF, DOC, DOCX) maksimal 2MB</p>
+                            
+                            <!-- File Upload Area -->
+                            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg transition-colors duration-200 hover:border-blue-400"
+                                 :class="{ 'border-blue-400': fileName }">
+                                <div class="space-y-2 text-center">
+                                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                    
+                                    <div class="flex flex-col items-center justify-center text-sm text-gray-600">
+                                        <label for="file_apbdes" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                                            <span>Upload file</span>
+                                            <input id="file_apbdes" name="file_apbdes" type="file" class="sr-only" @change="handleFileSelect($event)" accept=".pdf,.doc,.docx">
+                                        </label>
+                                        <p class="pl-1">atau drag and drop</p>
+                                    </div>
+                                    
+                                    <!-- Selected File Info -->
+                                    <div x-show="fileName" class="mt-4">
+                                        <div class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                            <div class="flex items-center space-x-3">
+                                                <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                                </svg>
+                                                <div>
+                                                    <p class="text-sm font-medium text-gray-900" x-text="fileName"></p>
+                                                    <p class="text-xs text-gray-500">Klik untuk mengganti file</p>
+                                                </div>
+                                            </div>
+                                            <button type="button" @click="clearFile()" class="text-red-500 hover:text-red-700">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <p class="text-xs text-gray-500" x-show="!fileName">
+                                        PDF, DOC, DOCX up to 2MB
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        @error('file_apbdes')
+                            <p class="text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                        <p x-show="errors.file_apbdes" x-text="errors.file_apbdes" class="text-sm text-red-600"></p>
+                        
+                        <!-- Current File Info -->
+                        @if($dataDashboard->file_apbdes)
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                    <div>
+                                        <p class="text-sm font-medium text-green-800">File saat ini:</p>
+                                        <p class="text-sm text-green-700">{{ basename($dataDashboard->file_apbdes) }}</p>
+                                    </div>
+                                </div>
+                                <a href="{{ Storage::disk('public')->url($dataDashboard->file_apbdes) }}" 
+                                   target="_blank" 
+                                   class="inline-flex items-center px-3 py-1 border border-green-300 text-sm leading-5 font-medium rounded-full text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                    Lihat
+                                </a>
+                            </div>
+                            <p class="text-xs text-green-600 mt-2">Upload file baru akan mengganti file yang sudah ada</p>
+                        </div>
+                        @endif
                     </div>
 
                     <!-- Keterangan -->

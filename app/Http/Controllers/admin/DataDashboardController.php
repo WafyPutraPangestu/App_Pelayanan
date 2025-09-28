@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\DataDashboard;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class DataDashboardController extends Controller
 {
@@ -38,9 +39,15 @@ class DataDashboardController extends Controller
             'jumlah_laki_laki' => 'required|integer|min:0',
             'jumlah_perempuan' => 'required|integer|min:0',
             'anggaran_apbdes' => 'nullable|numeric|min:0',
+            'file_apbdes' => 'nullable|file|mimes:pdf,doc,docx|max:2048', // Maks 2MB
             'keterangan' => 'nullable|string',
         ]);
 
+        if ($request->hasFile('file_apbdes')) {
+            $filePath = $request->file('file_apbdes')->store('apbdes_files', 'public');
+            $validatedData['file_apbdes'] = $filePath;
+        }   
+        
         DataDashboard::create($validatedData);
 
         return redirect()->route('dataDashboard.index')->with('success', 'Data wilayah berhasil ditambahkan.');
@@ -66,8 +73,20 @@ class DataDashboardController extends Controller
             'jumlah_laki_laki' => 'required|integer|min:0',
             'jumlah_perempuan' => 'required|integer|min:0',
             'anggaran_apbdes' => 'nullable|numeric|min:0',
+            'file_apbdes' => 'nullable|file|mimes:pdf,doc,docx|max:2048', // Maks 2MB
             'keterangan' => 'nullable|string',
         ]);
+
+       
+    if ($request->hasFile('file_apbdes')) {
+        // hapus file lama kalau ada
+        if ($dataDashboard->file_apbdes && Storage::disk('public')->exists($dataDashboard->file_apbdes)) {
+            Storage::disk('public')->delete($dataDashboard->file_apbdes);
+        }
+
+        $filePath = $request->file('file_apbdes')->store('apbdes_files', 'public');
+        $validatedData['file_apbdes'] = $filePath;
+    }
 
         $dataDashboard->update($validatedData);
 

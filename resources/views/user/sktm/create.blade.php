@@ -1,63 +1,88 @@
 <x-layout>
-    <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Formulir Surat Keterangan Tidak Mampu (SKTM)</h1>
+    <div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl w-full bg-white rounded-2xl shadow-xl p-8 md:p-10">
+            <h1 class="text-3xl font-extrabold text-gray-900 mb-8 text-center tracking-tight">Formulir Surat Keterangan Tidak Mampu (SKTM)</h1>
 
-    <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg border">
-        <form action="{{ route('sktm.store') }}" method="POST">
-            @csrf
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                <div>
-                    <label for="nama" class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
-                    <input type="text" id="nama" name="nama" value="{{ old('nama') }}" class="w-full form-input" placeholder="Sesuai KTP">
-                    @error('nama') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                </div>
-                <div>
-                    <label for="nik" class="block text-sm font-medium text-gray-700 mb-1">NIK</label>
-                    <input type="text" id="nik" name="nik" value="{{ old('nik') }}" class="w-full form-input" placeholder="16 digit NIK">
-                    @error('nik') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                </div>
-                <div class="grid grid-cols-2 gap-4">
+            <form action="{{ route('sktm.store') }}" method="POST" x-data="{ errors: {} }" @submit="errors = {}">
+                @csrf
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
                     <div>
-                        <label for="tempat_lahir" class="block text-sm font-medium text-gray-700 mb-1">Tempat Lahir</label>
-                        <input type="text" id="tempat_lahir" name="tempat_lahir" value="{{ old('tempat_lahir') }}" class="w-full form-input">
-                        @error('tempat_lahir') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        <label for="nama" class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap</label>
+                        <input type="text" id="nama" name="nama" value="{{ old('nama') }}"
+                               class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 ease-in-out placeholder-gray-400"
+                               placeholder="Sesuai KTP">
+                        @error('nama')
+                            <span class="text-red-500 text-xs mt-1" x-show="errors.nama = '{{ $message }}'">{{ $message }}</span>
+                        @enderror
                     </div>
                     <div>
-                        <label for="tanggal_lahir" class="block text-sm font-medium text-gray-700 mb-1">Tanggal Lahir</label>
-                        <input type="date" id="tanggal_lahir" name="tanggal_lahir" value="{{ old('tanggal_lahir') }}" class="w-full form-input">
-                        @error('tanggal_lahir') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        <label for="nik" class="block text-sm font-medium text-gray-700 mb-2">NIK</label>
+                        <input type="text" id="nik" name="nik" value="{{ old('nik') }}"
+                               class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 ease-in-out placeholder-gray-400"
+                               placeholder="16 digit NIK">
+                        @error('nik')
+                            <span class="text-red-500 text-xs mt-1" x-show="errors.nik = '{{ $message }}'">{{ $message }}</span>
+                        @enderror
                     </div>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                     <div>
-                        <label for="jenis_kelamin" class="block text-sm font-medium text-gray-700 mb-1">Jenis Kelamin</label>
-                        <select id="jenis_kelamin" name="jenis_kelamin" class="w-full form-select">
+                    <div>
+                        <label for="tempat_lahir" class="block text-sm font-medium text-gray-700 mb-2">Tempat Lahir</label>
+                        <input type="text" id="tempat_lahir" name="tempat_lahir" value="{{ old('tempat_lahir') }}"
+                               class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 ease-in-out placeholder-gray-400">
+                        @error('tempat_lahir')
+                            <span class="text-red-500 text-xs mt-1" x-show="errors.tempat_lahir = '{{ $message }}'">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div>
+                        <label for="tanggal_lahir" class="block text-sm font-medium text-gray-700 mb-2">Tanggal Lahir</label>
+                        <input type="date" id="tanggal_lahir" name="tanggal_lahir" value="{{ old('tanggal_lahir') }}"
+                               class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 ease-in-out">
+                        @error('tanggal_lahir')
+                            <span class="text-red-500 text-xs mt-1" x-show="errors.tanggal_lahir = '{{ $message }}'">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div>
+                        <label for="jenis_kelamin" class="block text-sm font-medium text-gray-700 mb-2">Jenis Kelamin</label>
+                        <select id="jenis_kelamin" name="jenis_kelamin"
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 ease-in-out bg-white">
                             <option value="" disabled selected>Pilih...</option>
                             <option value="Laki-laki" @selected(old('jenis_kelamin') == 'Laki-laki')>Laki-laki</option>
                             <option value="Perempuan" @selected(old('jenis_kelamin') == 'Perempuan')>Perempuan</option>
                         </select>
-                        @error('jenis_kelamin') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        @error('jenis_kelamin')
+                            <span class="text-red-500 text-xs mt-1" x-show="errors.jenis_kelamin = '{{ $message }}'">{{ $message }}</span>
+                        @enderror
                     </div>
                     <div>
-                        <label for="agama" class="block text-sm font-medium text-gray-700 mb-1">Agama</label>
-                        <input type="text" id="agama" name="agama" value="{{ old('agama') }}" class="w-full form-input">
-                        @error('agama') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        <label for="agama" class="block text-sm font-medium text-gray-700 mb-2">Agama</label>
+                        <input type="text" id="agama" name="agama" value="{{ old('agama') }}"
+                               class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 ease-in-out placeholder-gray-400">
+                        @error('agama')
+                            <span class="text-red-500 text-xs mt-1" x-show="errors.agama = '{{ $message }}'">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div>
+                        <label for="pekerjaan" class="block text-sm font-medium text-gray-700 mb-2">Pekerjaan</label>
+                        <input type="text" id="pekerjaan" name="pekerjaan" value="{{ old('pekerjaan') }}"
+                               class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 ease-in-out placeholder-gray-400">
+                        @error('pekerjaan')
+                            <span class="text-red-500 text-xs mt-1" x-show="errors.pekerjaan = '{{ $message }}'">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="alamat" class="block text-sm font-medium text-gray-700 mb-2">Alamat Lengkap</label>
+                        <textarea id="alamat" name="alamat" rows="4"
+                                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 ease-in-out placeholder-gray-400">{{ old('alamat') }}</textarea>
+                        @error('alamat')
+                            <span class="text-red-500 text-xs mt-1" x-show="errors.alamat = '{{ $message }}'">{{ $message }}</span>
+                        @enderror
                     </div>
                 </div>
-                <div>
-                    <label for="pekerjaan" class="block text-sm font-medium text-gray-700 mb-1">Pekerjaan</label>
-                    <input type="text" id="pekerjaan" name="pekerjaan" value="{{ old('pekerjaan') }}" class="w-full form-input">
-                    @error('pekerjaan') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                </div>
-                <div class="md:col-span-2">
-                     <label for="alamat" class="block text-sm font-medium text-gray-700 mb-1">Alamat Lengkap</label>
-                    <textarea id="alamat" name="alamat" rows="3" class="w-full form-input">{{ old('alamat') }}</textarea>
-                    @error('alamat') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                </div>
-            </div>
 
-            <div class="mt-8 pt-6 border-t flex justify-end">
-                <button type="submit" class="btn-primary">Kirim Pengajuan</button>
-            </div>
-        </form>
+                <div class="mt-8 pt-6 border-t border-gray-200 flex justify-end space-x-4">
+                    <button type="reset" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition duration-200 ease-in-out">Reset</button>
+                    <button type="submit" class="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-200 ease-in-out">Kirim Pengajuan</button>
+                </div>
+            </form>
+        </div>
     </div>
 </x-layout>
