@@ -215,6 +215,28 @@
                     </div>
                     <span class="font-medium">Berita</span>
                 </a>
+                <a 
+                    href="{{ route('pengajuanSurat.index') }}"
+                    class="flex items-center space-x-3 rounded-xl px-4 py-3 text-gray-700 transition-all duration-200 hover:bg-gradient-to-r hover:from-teal-50 hover:to-cyan-50 hover:text-teal-700 group"
+                >
+                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-teal-500 to-cyan-600 text-white shadow-sm group-hover:shadow-md transition-shadow">
+                        <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M17,17H7V15H17V17M17,13H7V11H17V13M17,9H7V7H17V9Z"/>
+                        </svg>
+                    </div>
+                    <span class="font-medium">Pengajuan Surat</span>
+                </a>
+                <a 
+                    href="{{ route('suratMasuk.index') }}"
+                    class="flex items-center space-x-3 rounded-xl px-4 py-3 text-gray-700 transition-all duration-200 hover:bg-gradient-to-r hover:from-pink-50 hover:to-red-50 hover:text-pink-700 group"
+                >
+                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-pink-500 to-red-600 text-white shadow-sm group-hover:shadow-md transition-shadow">
+                        <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,6H13V13H11V6M11,16H13V18H11V16Z"/>
+                        </svg> 
+                        </div>
+                    <span class="font-medium">Surat Masuk</span>
+                </a>
             </div>
             @endcan
 
@@ -224,7 +246,7 @@
                 <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Akun</p>
                 
                 <a 
-                    href="{{ route('auth.login') }}"
+                    href="{{ route('login') }}"
                     class="flex items-center space-x-3 rounded-xl px-4 py-3 text-gray-700 transition-all duration-200 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-blue-700 group"
                 >
                     <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-sm group-hover:shadow-md transition-shadow">
@@ -251,9 +273,12 @@
         </nav>
 
         <!-- Footer -->
+        @can('user')
         <div class="border-t border-gray-200/50 p-6">
             <div class="rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 p-4">
                 <div class="flex items-center space-x-3">
+                        
+                   
                     <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white">
                        <a href="{{ route('pengaduan.index') }}">
                         <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
@@ -265,10 +290,33 @@
                         <p class="text-xs text-gray-600">Hubungi admin untuk dukungan</p>
                     </div>
                 </a>
-                </div>
+            </div>
             </div>
         </div>
     </div>
+    @endcan
+        @can('admin')
+        <div class="border-t border-gray-200/50 p-6">
+            <div class="rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 p-4">
+                <div class="flex items-center space-x-3">
+                        
+                   
+                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+                       <a href="{{ route('pengaduanAdmin.index') }}">
+                        <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,17A1.5,1.5 0 0,1 10.5,15.5A1.5,1.5 0 0,1 12,14A1.5,1.5 0 0,1 13.5,15.5A1.5,1.5 0 0,1 12,17M14.5,10.5C14.5,9 13.5,8 12,8C10.5,8 9.5,9 9.5,10.5"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-800">Layanan Pengaduan</p>
+                        <p class="text-xs text-gray-600">pengaduan dari pengguna</p>
+                    </div>
+                </a>
+            </div>
+            </div>
+        </div>
+    </div>
+    @endcan
 
     <!-- Mobile Menu Button -->
     <button 

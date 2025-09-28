@@ -1,321 +1,272 @@
 <x-layout>
-    <div class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50" x-data="pengaduanData()">
-        <!-- Header Section -->
-        <div class="bg-white shadow-lg border-b border-gray-100">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                    <div class="flex items-center space-x-4">
-                        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-3 rounded-xl shadow-lg">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <h1 class="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                                Daftar Pengaduan
-                            </h1>
-                            <p class="text-gray-600 mt-1">Kelola dan pantau semua pengaduan masyarakat</p>
-                        </div>
+    <div x-data="pengaduanIndex()" class="container mx-auto px-4 py-6">
+        <!-- Header -->
+        <div class="mb-6">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Kelola Pengaduan</h1>
+            <p class="text-gray-600">Kelola dan tanggapi pengaduan dari masyarakat</p>
+        </div>
+
+        <!-- Statistik Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white rounded-lg shadow-sm border p-4">
+                <div class="flex items-center">
+                    <div class="p-2 bg-blue-100 rounded-lg">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
                     </div>
-                    <div class="flex flex-col sm:flex-row gap-3">
-                        <a href="{{ route('pengaduan.create') }}" 
-                           class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl shadow-lg hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                            </svg>
-                            Buat Pengaduan Baru
-                        </a>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Total Pengaduan</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ $statistik['total'] }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm border p-4">
+                <div class="flex items-center">
+                    <div class="p-2 bg-yellow-100 rounded-lg">
+                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Baru</p>
+                        <p class="text-2xl font-bold text-yellow-600">{{ $statistik['baru'] }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm border p-4">
+                <div class="flex items-center">
+                    <div class="p-2 bg-orange-100 rounded-lg">
+                        <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Diproses</p>
+                        <p class="text-2xl font-bold text-orange-600">{{ $statistik['diproses'] }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm border p-4">
+                <div class="flex items-center">
+                    <div class="p-2 bg-green-100 rounded-lg">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Selesai</p>
+                        <p class="text-2xl font-bold text-green-600">{{ $statistik['selesai'] }}</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <!-- Statistics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="bg-white rounded-2xl shadow-xl p-6 transform hover:scale-105 transition-all duration-300">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">Total Pengaduan</p>
-                            <p class="text-3xl font-bold text-gray-900 mt-2">{{ $stats['total'] }}</p>
-                        </div>
-                        <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-3 rounded-xl">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-2xl shadow-xl p-6 transform hover:scale-105 transition-all duration-300">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">Pengaduan Baru</p>
-                            <p class="text-3xl font-bold text-orange-600 mt-2">{{ $stats['baru'] }}</p>
-                        </div>
-                        <div class="bg-gradient-to-r from-orange-500 to-orange-600 p-3 rounded-xl">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-2xl shadow-xl p-6 transform hover:scale-105 transition-all duration-300">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">Diproses</p>
-                            <p class="text-3xl font-bold text-yellow-600 mt-2">{{ $stats['diproses'] }}</p>
-                        </div>
-                        <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 p-3 rounded-xl">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-2xl shadow-xl p-6 transform hover:scale-105 transition-all duration-300">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">Selesai</p>
-                            <p class="text-3xl font-bold text-green-600 mt-2">{{ $stats['selesai'] }}</p>
-                        </div>
-                        <div class="bg-gradient-to-r from-green-500 to-green-600 p-3 rounded-xl">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
+        <!-- Filter dan Search -->
+        <div class="bg-white rounded-lg shadow-sm border mb-6">
+            <div class="p-4 border-b">
+                <h2 class="text-lg font-semibold text-gray-900">Filter Pengaduan</h2>
             </div>
-
-            <!-- Filters & Search -->
-            <div class="bg-white rounded-2xl shadow-xl p-6 mb-8">
-                <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
-                    <div class="flex flex-col sm:flex-row gap-4 flex-1">
-                        <div class="relative flex-1 max-w-md">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                </svg>
-                            </div>
-                            <input x-model="searchQuery" 
-                                   type="text" 
-                                   placeholder="Cari pengaduan..." 
-                                   class="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl leading-5 bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200">
-                        </div>
-                        
-                        <div class="relative">
-                            <select x-model="selectedStatus" 
-                                    class="appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200">
-                                <option value="">Semua Status</option>
-                                <option value="baru">Baru</option>
-                                <option value="diproses">Diproses</option>
-                                <option value="selesai">Selesai</option>
-                                <option value="ditolak">Ditolak</option>
-                            </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
-                                </svg>
-                            </div>
-                        </div>
+            <div class="p-4">
+                <form method="GET" action="{{ route('pengaduanAdmin.index') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                        <select name="status" id="status" x-model="selectedStatus" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="semua">Semua Status</option>
+                            <option value="baru" {{ $status == 'baru' ? 'selected' : '' }}>Baru</option>
+                            <option value="diproses" {{ $status == 'diproses' ? 'selected' : '' }}>Diproses</option>
+                            <option value="selesai" {{ $status == 'selesai' ? 'selected' : '' }}>Selesai</option>
+                            <option value="ditolak" {{ $status == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
+                        </select>
                     </div>
-                    
-                    <div class="flex gap-2">
-                        <button @click="viewMode = 'grid'" 
-                                :class="viewMode === 'grid' ? 'bg-blue-100 text-blue-600' : 'text-gray-400 hover:text-gray-600'"
-                                class="p-2 rounded-lg transition-all duration-200">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-                            </svg>
-                        </button>
-                        <button @click="viewMode = 'list'" 
-                                :class="viewMode === 'list' ? 'bg-blue-100 text-blue-600' : 'text-gray-400 hover:text-gray-600'"
-                                class="p-2 rounded-lg transition-all duration-200">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
-                            </svg>
+
+                    <div>
+                        <label for="kategori" class="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
+                        <select name="kategori" id="kategori" x-model="selectedKategori" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="semua">Semua Kategori</option>
+                            @foreach($kategoriList as $kat)
+                                <option value="{{ $kat }}" {{ $kategori == $kat ? 'selected' : '' }}>{{ $kat }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="flex items-end">
+                        <button type="submit" class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200">
+                            Filter
                         </button>
                     </div>
-                </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tabel Pengaduan -->
+        <div class="bg-white rounded-lg shadow-sm border">
+            <div class="p-4 border-b">
+                <h2 class="text-lg font-semibold text-gray-900">Daftar Pengaduan</h2>
             </div>
 
-            <!-- Content Area -->
-            <div x-show="viewMode === 'grid'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @forelse ($pengaduans as $pengaduan)
-                    <div class="bg-white rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 overflow-hidden border border-gray-100">
-                        <div class="p-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <span class="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
-                                    {{ $pengaduan->nomor_pengaduan }}
-                                </span>
-                                <span class="px-3 py-1 text-xs font-semibold rounded-full
-                                    {{ $pengaduan->status === 'baru' ? 'bg-orange-100 text-orange-800' : 
-                                       ($pengaduan->status === 'diproses' ? 'bg-yellow-100 text-yellow-800' : 
-                                        ($pengaduan->status === 'selesai' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')) }}">
-                                    {{ ucfirst($pengaduan->status) }}
-                                </span>
-                            </div>
-                            
-                            <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2">{{ $pengaduan->judul }}</h3>
-                            
-                            <p class="text-gray-600 mb-4 line-clamp-3">{{ $pengaduan->isi_pengaduan }}</p>
-                            
-                            <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
-                                <div class="flex items-center space-x-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                    </svg>
-                                    <span>{{ $pengaduan->user->name }}</span>
-                                </div>
-                                <div class="flex items-center space-x-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a1 1 0 011-1h6a1 1 0 011 1v4h3a1 1 0 011 1v1a1 1 0 01-1 1H5a1 1 0 01-1-1V8a1 1 0 011-1h3z"></path>
-                                    </svg>
-                                    <span>{{ $pengaduan->kategori }}</span>
-                                </div>
-                            </div>
-                            
-                            <div class="text-xs text-gray-400 mb-4">
-                                {{ $pengaduan->created_at->format('d M Y, H:i') }}
-                            </div>
-                            
-                            <div class="flex space-x-2">
-                                <button class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 px-4 rounded-xl text-sm font-medium hover:from-blue-700 hover:to-indigo-700 transition-all duration-200">
-                                    Lihat Detail
-                                </button>
-                                @if($pengaduan->status === 'baru')
-                                <button class="bg-gray-100 text-gray-600 py-2 px-4 rounded-xl text-sm font-medium hover:bg-gray-200 transition-all duration-200">
-                                    Proses
-                                </button>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                    @empty
-                    <div class="col-span-full">
-                        <div class="text-center py-12 bg-white rounded-2xl shadow-xl">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                            <h3 class="mt-4 text-lg font-medium text-gray-900">Belum ada pengaduan</h3>
-                            <p class="mt-2 text-gray-500">Mulai dengan membuat pengaduan baru.</p>
-                            <div class="mt-6">
-                                <a href="{{ route('pengaduan.create') }}" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                    </svg>
-                                    Buat Pengaduan
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    @endforelse
-                </div>
-            </div>
-
-            <!-- List View -->
-            <div x-show="viewMode === 'list'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100">
-                <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
-                                <tr>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Nomor & Judul</th>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Pelapor</th>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Kategori</th>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Tanggal</th>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200">
-                                @forelse ($pengaduans as $pengaduan)
-                                <tr class="hover:bg-gray-50 transition-colors duration-200">
-                                    <td class="px-6 py-4">
-                                        <div>
-                                            <div class="text-sm font-medium text-blue-600">{{ $pengaduan->nomor_pengaduan }}</div>
-                                            <div class="text-sm font-semibold text-gray-900 line-clamp-2">{{ $pengaduan->judul }}</div>
-                                        </div>
+            @if($pengaduan->count() > 0)
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nomor</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pengadu</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Judul</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach($pengaduan as $pengaduanItem)
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {{ $pengaduanItem->nomor_pengaduan }}
                                     </td>
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-8 w-8">
-                                                <div class="h-8 w-8 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 flex items-center justify-center">
-                                                    <span class="text-sm font-medium text-white">{{ substr($pengaduan->user->name, 0, 1) }}</span>
-                                                </div>
-                                            </div>
-                                            <div class="ml-3">
-                                                <div class="text-sm font-medium text-gray-900">{{ $pengaduan->user->name }}</div>
-                                            </div>
-                                        </div>
+                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ $pengaduanItem->user->name ?? 'Tidak diketahui' }}
                                     </td>
-                                    <td class="px-6 py-4">
-                                        <span class="px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
-                                            {{ $pengaduan->kategori }}
+                                    <td class="px-4 py-4 text-sm text-gray-900">
+                                        <div class="max-w-xs truncate">{{ $pengaduanItem->judul }}</div>
+                                    </td>
+                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <span class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
+                                            {{ $pengaduanItem->kategori }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4">
-                                        <span class="px-3 py-1 text-xs font-semibold rounded-full
-                                            {{ $pengaduan->status === 'baru' ? 'bg-orange-100 text-orange-800' : 
-                                               ($pengaduan->status === 'diproses' ? 'bg-yellow-100 text-yellow-800' : 
-                                                ($pengaduan->status === 'selesai' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')) }}">
-                                            {{ ucfirst($pengaduan->status) }}
-                                        </span>
+                                    <td class="px-4 py-4 whitespace-nowrap text-sm">
+                                        @if($pengaduanItem->status == 'baru')
+                                            <span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Baru</span>
+                                        @elseif($pengaduanItem->status == 'diproses')
+                                            <span class="px-2 py-1 text-xs font-medium bg-orange-100 text-orange-800 rounded-full">Diproses</span>
+                                        @elseif($pengaduanItem->status == 'selesai')
+                                            <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Selesai</span>
+                                        @else
+                                            <span class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">Ditolak</span>
+                                        @endif
                                     </td>
-                                    <td class="px-6 py-4 text-sm text-gray-500">
-                                        {{ $pengaduan->created_at->format('d M Y') }}
+                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ $pengaduanItem->created_at->format('d/m/Y') }}
                                     </td>
-                                    <td class="px-6 py-4">
+                                    <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex space-x-2">
-                                            <button class="text-blue-600 hover:text-blue-900 font-medium text-sm">Detail</button>
-                                            @if($pengaduan->status === 'baru')
-                                            <button class="text-yellow-600 hover:text-yellow-900 font-medium text-sm">Proses</button>
-                                            @endif
+                                            <a href="{{ route('pengaduanAdmin.show', $pengaduanItem) }}" 
+                                               class="text-blue-600 hover:text-blue-900 transition-colors duration-200">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                </svg>
+                                            </a>
+                                            <button @click="confirmDelete({{ $pengaduanItem->id }}, '{{ addslashes($pengaduanItem->judul) }}')" 
+                                                    class="text-red-600 hover:text-red-900 transition-colors duration-200">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                </svg>
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="6" class="px-6 py-12 text-center">
-                                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                        </svg>
-                                        <h3 class="mt-4 text-lg font-medium text-gray-900">Belum ada pengaduan</h3>
-                                        <p class="mt-2 text-gray-500">Mulai dengan membuat pengaduan baru.</p>
-                                    </td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="px-4 py-3 border-t">
+                    {{ $pengaduan->appends(request()->query())->links() }}
+                </div>
+            @else
+                <div class="p-8 text-center">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">Tidak ada pengaduan</h3>
+                    <p class="mt-1 text-sm text-gray-500">Belum ada pengaduan yang ditemukan dengan filter yang dipilih.</p>
+                </div>
+            @endif
+        </div>
+
+        <!-- Modal Konfirmasi Hapus -->
+        <div x-show="showDeleteModal" 
+             x-transition:enter="transition ease-out duration-300" 
+             x-transition:enter-start="opacity-0" 
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200" 
+             x-transition:leave-start="opacity-100" 
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" 
+             style="display: none;">
+            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                <div class="mt-3 text-center">
+                    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                        <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mt-4">Hapus Pengaduan</h3>
+                    <div class="mt-2 px-7 py-3">
+                        <p class="text-sm text-gray-500">
+                            Apakah Anda yakin ingin menghapus pengaduan "<span x-text="deleteTitle"></span>"? 
+                            Tindakan ini tidak dapat dibatalkan.
+                        </p>
+                    </div>
+                    <div class="items-center px-4 py-3">
+                        <button @click="showDeleteModal = false" 
+                                class="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-24 mr-2 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                            Batal
+                        </button>
+                        <button @click="deleteItem()" 
+                                class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-24 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-300">
+                            Hapus
+                        </button>
                     </div>
                 </div>
             </div>
-
-            <!-- Pagination -->
-            @if($pengaduans->hasPages())
-            <div class="mt-8 flex justify-center">
-                <div class="bg-white rounded-2xl shadow-xl p-6">
-                    {{ $pengaduans->links() }}
-                </div>
-            </div>
-            @endif
         </div>
     </div>
 
     <script>
-        function pengaduanData() {
+        function pengaduanIndex() {
             return {
-                searchQuery: '',
-                selectedStatus: '',
-                viewMode: 'grid',
-                
-                init() {
-                    // Initialize any data or event listeners
-                    console.log('Pengaduan page initialized');
+                selectedStatus: '{{ $status }}',
+                selectedKategori: '{{ $kategori }}',
+                showDeleteModal: false,
+                deleteId: null,
+                deleteTitle: '',
+
+                confirmDelete(id, title) {
+                    this.deleteId = id;
+                    this.deleteTitle = title;
+                    this.showDeleteModal = true;
+                },
+
+                async deleteItem() {
+                    try {
+                        const formData = new FormData();
+                        formData.append('_method', 'DELETE');
+                        formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+
+                        const response = await fetch(`/admin/pengaduanAdmin/${this.deleteId}`, {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        if (response.ok) {
+                            window.location.reload();
+                        } else {
+                            alert('Gagal menghapus pengaduan');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Terjadi kesalahan saat menghapus pengaduan');
+                    }
+
+                    this.showDeleteModal = false;
                 }
             }
         }

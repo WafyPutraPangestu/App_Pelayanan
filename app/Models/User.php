@@ -47,4 +47,18 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+   
+
+    /**
+     * Semua surat final yang pernah diterima oleh user ini.
+     */
+    public function suratMasuk()
+    {
+        return $this->hasMany(SuratMasuk::class);
+    }
+    public function biodata()
+    {
+        return $this->hasOne(BiodataPengguna::class);
+    }
 }

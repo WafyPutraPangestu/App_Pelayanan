@@ -31,7 +31,7 @@ class SkuController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->all());
+        // dd($request->all());
         $validatedData = $request->validate([
             'nama' => ['required', 'string', 'max:255'],
             'nik' => ['required', 'string', 'digits:16'],

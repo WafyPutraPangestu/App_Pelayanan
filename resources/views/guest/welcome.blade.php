@@ -9,7 +9,7 @@
     </form>
         @endauth
 
-    <a href="{{ route('auth.login') }}">login</a>
+    <a href="{{ route('login') }}">login</a>
     <a href="{{ route('auth.register') }}">register</a>
 
     a<a href="{{ route('surat.index') }}">halaman surat</a>
