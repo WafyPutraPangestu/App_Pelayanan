@@ -32,7 +32,7 @@ class AuthController extends Controller
             'aktif' => true,
         ]);
         
-        return redirect()->route('guest.auth.login')->with('success', 'Registration successful!');
+        return redirect()->route('login')->with('success', 'Registration successful!');
     }
     public function login()
     {
