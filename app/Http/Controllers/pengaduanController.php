@@ -29,6 +29,11 @@ class pengaduanController extends Controller
             $query->where('status', $request->status);
         }
 
+        // Terapkan filter category jika ada
+        if ($request->has('category') && $request->category != '') {
+            $query->where('category', $request->category);
+        }
+
         $pengaduans = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
 
         // Statistik juga hanya untuk user yang login
@@ -46,17 +51,22 @@ class pengaduanController extends Controller
 
     public function create()
     {
-        $categories = [
-           'Surat Domisili' => 'Pengajuan surat keterangan tempat tinggal.',
-    'Surat Keterangan Lahir' => 'Pengajuan surat keterangan kelahiran anak.',
-    'Surat Keterangan Menikah' => 'Pengajuan surat pengantar untuk keperluan menikah.',
-    'Surat Pengantar' => 'Pengajuan surat pengantar untuk berbagai keperluan umum.',
-    'Surat Keterangan Kematian' => 'Pengajuan Surat Keterangan Kematian (SKM).',
-    'Surat Keterangan Tidak Mampu' => 'Pengajuan Surat Keterangan Tidak Mampu (SKTM).',
-    'Surat Keterangan Usaha' => 'Pengajuan Surat Keterangan Usaha (SKU).',
+        $mainCategories = [
+            'pelayanan administrasi' => 'Terkait pembuatan surat, dokumen kependudukan, dll.',
+            'pelayanan umum' => 'Terkait fasilitas umum, infrastruktur, kebersihan, dll.'
         ];
 
-        return view('user.pengaduan.create', compact('categories'));
+        $categories = [
+           'Surat Domisili' => 'Pengajuan surat keterangan tempat tinggal.',
+           'Surat Keterangan Lahir' => 'Pengajuan surat keterangan kelahiran anak.',
+           'Surat Keterangan Menikah' => 'Pengajuan surat pengantar untuk keperluan menikah.',
+           'Surat Pengantar' => 'Pengajuan surat pengantar untuk berbagai keperluan umum.',
+           'Surat Keterangan Kematian' => 'Pengajuan Surat Keterangan Kematian (SKM).',
+           'Surat Keterangan Tidak Mampu' => 'Pengajuan Surat Keterangan Tidak Mampu (SKTM).',
+           'Surat Keterangan Usaha' => 'Pengajuan Surat Keterangan Usaha (SKU).',
+        ];
+
+        return view('user.pengaduan.create', compact('categories', 'mainCategories'));
     }
 
     public function store(Request $request)
@@ -64,6 +74,7 @@ class pengaduanController extends Controller
         $request->validate([
             'judul' => 'required|min:5|max:255',
             'isi_pengaduan' => 'required|min:20',
+            'category' => 'required|in:pelayanan administrasi,pelayanan umum',
             'kategori' => 'required',
             'lampiran' => 'nullable|file|mimes:jpeg,png,jpg,pdf,doc,docx|max:2048'
         ], [
@@ -71,6 +82,7 @@ class pengaduanController extends Controller
             'judul.min' => 'Judul pengaduan minimal 5 karakter',
             'isi_pengaduan.required' => 'Isi pengaduan harus diisi',
             'isi_pengaduan.min' => 'Isi pengaduan minimal 20 karakter',
+            'category.required' => 'Jenis layanan harus dipilih',
             'kategori.required' => 'Kategori harus dipilih',
             'lampiran.mimes' => 'Format file tidak didukung',
             'lampiran.max' => 'Ukuran file maksimal 2MB'
@@ -92,73 +104,85 @@ class pengaduanController extends Controller
             ->route('pengaduan.index')
             ->with('success', 'Pengaduan berhasil disubmit! Kami akan segera menindaklanjuti pengaduan Anda.');
     }
-    // Di dalam pengaduanController.php
-
-public function show(Pengaduan $pengaduan)
-{
-    // Keamanan: pastikan user hanya bisa melihat pengaduan miliknya
-    if ($pengaduan->user_id !== Auth::id()) {
-        abort(403);
-    }
-    return view('user.pengaduan.show', compact('pengaduan'));
-}
-public function edit(Pengaduan $pengaduan)
-{
-    // Keamanan: Pastikan user hanya bisa mengedit pengaduan miliknya
-    // dan hanya jika statusnya masih 'baru'.
-    if ($pengaduan->user_id !== Auth::id() || $pengaduan->status !== 'baru') {
-        abort(403, 'ANDA TIDAK DAPAT MENGEDIT PENGADUAN INI.');
-    }
-
-    // Siapkan data kategori, sama seperti di method create
-    $categories = [
-        'Surat Domisili' => 'Pengajuan surat keterangan tempat tinggal.',
-        'Surat Keterangan Lahir' => 'Pengajuan surat keterangan kelahiran anak.',
-        'Surat Keterangan Menikah' => 'Pengajuan surat pengantar untuk keperluan menikah.',
-        'Surat Pengantar' => 'Pengajuan surat pengantar untuk berbagai keperluan umum.',
-        'Surat Keterangan Kematian' => 'Pengajuan Surat Keterangan Kematian (SKM).',
-        'Surat Keterangan Tidak Mampu' => 'Pengajuan Surat Keterangan Tidak Mampu (SKTM).',
-        'Surat Keterangan Usaha' => 'Pengajuan Surat Keterangan Usaha (SKU).',
-    ];
-
-    return view('user.pengaduan.edit', compact('pengaduan', 'categories'));
-}
-
-public function update(Request $request, Pengaduan $pengaduan)
-{
-    if ($pengaduan->user_id !== Auth::id() || $pengaduan->status !== 'baru') {
-        abort(403, 'Anda tidak dapat mengedit pengaduan ini.');
-    }
-
-    $request->validate([ 'judul' => 'required|min:5|max:255', /* ... validasi lainnya ... */ ]);
     
-    $data = $request->only(['judul', 'isi_pengaduan', 'kategori']);
-
-    if ($request->hasFile('lampiran')) {
-        // Hapus lampiran lama jika ada
+    public function show(Pengaduan $pengaduan)
+    {
+        // Keamanan: pastikan user hanya bisa melihat pengaduan miliknya
+        if ($pengaduan->user_id !== Auth::id()) {
+            abort(403);
+        }
+        return view('user.pengaduan.show', compact('pengaduan'));
+    }
+    
+    public function edit(Pengaduan $pengaduan)
+    {
+        // Keamanan: Pastikan user hanya bisa mengedit pengaduan miliknya
+        // dan hanya jika statusnya masih 'baru'.
+        if ($pengaduan->user_id !== Auth::id() || $pengaduan->status !== 'baru') {
+            abort(403, 'ANDA TIDAK DAPAT MENGEDIT PENGADUAN INI.');
+        }
+    
+        $mainCategories = [
+            'pelayanan administrasi' => 'Terkait pembuatan surat, dokumen kependudukan, dll.',
+            'pelayanan umum' => 'Terkait fasilitas umum, infrastruktur, kebersihan, dll.'
+        ];
+    
+        // Siapkan data kategori, sama seperti di method create
+        $categories = [
+            'Surat Domisili' => 'Pengajuan surat keterangan tempat tinggal.',
+            'Surat Keterangan Lahir' => 'Pengajuan surat keterangan kelahiran anak.',
+            'Surat Keterangan Menikah' => 'Pengajuan surat pengantar untuk keperluan menikah.',
+            'Surat Pengantar' => 'Pengajuan surat pengantar untuk berbagai keperluan umum.',
+            'Surat Keterangan Kematian' => 'Pengajuan Surat Keterangan Kematian (SKM).',
+            'Surat Keterangan Tidak Mampu' => 'Pengajuan Surat Keterangan Tidak Mampu (SKTM).',
+            'Surat Keterangan Usaha' => 'Pengajuan Surat Keterangan Usaha (SKU).',
+        ];
+    
+        return view('user.pengaduan.edit', compact('pengaduan', 'categories', 'mainCategories'));
+    }
+    
+    public function update(Request $request, Pengaduan $pengaduan)
+    {
+        if ($pengaduan->user_id !== Auth::id() || $pengaduan->status !== 'baru') {
+            abort(403, 'Anda tidak dapat mengedit pengaduan ini.');
+        }
+    
+        $request->validate([
+            'judul' => 'required|min:5|max:255',
+            'isi_pengaduan' => 'required|min:20',
+            'category' => 'required|in:pelayanan administrasi,pelayanan umum',
+            'kategori' => 'required',
+            'lampiran' => 'nullable|file|mimes:jpeg,png,jpg,pdf,doc,docx|max:2048'
+        ]);
+        
+        $data = $request->only(['judul', 'isi_pengaduan', 'category', 'kategori']);
+    
+        if ($request->hasFile('lampiran')) {
+            // Hapus lampiran lama jika ada
+            if ($pengaduan->lampiran) {
+                Storage::disk('public')->delete($pengaduan->lampiran);
+            }
+            $data['lampiran'] = $request->file('lampiran')->store('pengaduan', 'public');
+        }
+    
+        $pengaduan->update($data);
+        return redirect()->route('pengaduan.index')->with('success', 'Pengaduan berhasil diperbarui!');
+    }
+    
+    public function destroy(Pengaduan $pengaduan)
+    {
+        if ($pengaduan->user_id !== Auth::id() || $pengaduan->status !== 'baru') {
+            abort(403, 'Anda tidak dapat menghapus pengaduan ini.');
+        }
+    
+        // Hapus lampiran dari storage
         if ($pengaduan->lampiran) {
             Storage::disk('public')->delete($pengaduan->lampiran);
         }
-        $data['lampiran'] = $request->file('lampiran')->store('pengaduan', 'public');
+    
+        $pengaduan->delete();
+        return redirect()->route('pengaduan.index')->with('success', 'Pengaduan berhasil dihapus!');
     }
 
-    $pengaduan->update($data);
-    return redirect()->route('pengaduan.index')->with('success', 'Pengaduan berhasil diperbarui!');
 }
 
-public function destroy(Pengaduan $pengaduan)
-{
-    if ($pengaduan->user_id !== Auth::id() || $pengaduan->status !== 'baru') {
-        abort(403, 'Anda tidak dapat menghapus pengaduan ini.');
-    }
-
-    // Hapus lampiran dari storage
-    if ($pengaduan->lampiran) {
-        Storage::disk('public')->delete($pengaduan->lampiran);
-    }
-
-    $pengaduan->delete();
-    return redirect()->route('pengaduan.index')->with('success', 'Pengaduan berhasil dihapus!');
-}
-
-}

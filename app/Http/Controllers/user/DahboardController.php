@@ -40,6 +40,10 @@ class DahboardController extends Controller
             'pengaduan_terakhir' => Pengaduan::where('user_id', Auth::id())->latest()->first(),
         ];
 
-        return view('user.dashboard.index', compact('dataPenduduk', 'dataGender', 'jumlahKeluarga', 'infoUser'));
+        // 5. Data APBDes untuk ditampilkan
+        $dataApbdes = DataDashboard::whereNotNull('file_apbdes')->orderBy('created_at', 'desc')->get();
+        $totalAnggaran = DataDashboard::sum('anggaran_apbdes');
+
+        return view('user.dashboard.index', compact('dataPenduduk', 'dataGender', 'jumlahKeluarga', 'infoUser', 'dataApbdes', 'totalAnggaran'));
     }
 }

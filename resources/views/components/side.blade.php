@@ -227,6 +227,18 @@
                     </div>
                     <span class="font-medium">Dashboard</span>
                 </a>
+
+                <a 
+                href="{{ route('ManajemenUser.index') }}"
+                class="flex items-center space-x-3 rounded-xl px-4 py-3 text-gray-700 transition-all duration-200 hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 hover:text-green-700 group"
+            >
+                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-sm group-hover:shadow-md transition-shadow">
+                    <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3M8 11c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5s-3 1.34-3 3 1.34 3 3 3m0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05C15.16 13.57 16 14.76 16 16v3h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                    </svg>
+                </div>
+                <span class="font-medium">Manajemen User</span>
+            </a>
                 
                 <a 
                     href="{{ route('dataDashboard.index') }}"

@@ -22,6 +22,7 @@ use App\Http\Controllers\user\SuratMasukController as UserSuratMasukController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\user\DahboardController as UserDashboardController;
 use App\Http\Controllers\admin\DahboardController as AdminDashboardController;
+use App\Http\Controllers\admin\ManajemenUserController;
 use App\Http\Controllers\user\UserProfileController;
 
 Route::get('/', function () {
@@ -77,6 +78,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::resource('pengaduanAdmin', AdminPengaduanController::class)->parameters([
         'pengaduanAdmin' => 'pengaduan'
     ]);
+    Route::get('ManajemenUser', [ManajemenUserController::class, 'index'])->name('ManajemenUser.index');
 
     Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     

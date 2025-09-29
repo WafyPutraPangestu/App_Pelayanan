@@ -13,6 +13,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('nomor_pengaduan')->unique();
+            $table->enum('category', ['pelayanan administrasi', 'pelayanan umum']);
+     
             $table->string('judul');
             $table->text('isi_pengaduan');
             $table->string('kategori');

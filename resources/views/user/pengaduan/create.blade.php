@@ -82,6 +82,38 @@
                         </div>
                     </div>
 
+                    <!-- Jenis Layanan (Category) -->
+                    @php
+                        // Definisikan variabel di sini untuk memastikan variabel selalu ada
+                        $mainCategories = ['pelayanan administrasi', 'pelayanan umum'];
+                    @endphp
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-900 mb-3">
+                            <span class="flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                                Jenis Layanan
+                                <span class="text-red-500 ml-1">*</span>
+                            </span>
+                        </label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            @foreach($mainCategories as $cat)
+                            <label class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-blue-50 hover:border-blue-400 transition-all duration-200"
+                                   :class="{ 'bg-blue-100 border-blue-500 ring-2 ring-blue-300': formData.category === '{{ $cat }}' }">
+                                <input type="radio" name="category" value="{{ $cat }}" x-model="formData.category" class="hidden">
+                                <div class="ml-2 text-sm font-medium text-gray-800">{{ ucwords($cat) }}</div>
+                            </label>
+                            @endforeach
+                        </div>
+                        @error('category')
+                        <div class="mt-2 flex items-center text-red-600 text-sm">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            {{ $message }}
+                        </div>
+                        @enderror
+                    </div>
+
                     <!-- Kategori -->
                     <div x-data="{ focused: false }">
                         <label for="kategori" class="block text-sm font-semibold text-gray-900 mb-3">
@@ -132,14 +164,14 @@
                         </label>
                         <div class="relative">
                             <textarea id="isi_pengaduan" 
-                                     name="isi_pengaduan" 
-                                     rows="6"
-                                     x-model="formData.isi_pengaduan"
-                                     @input="wordCount = $event.target.value.length"
-                                     @focus="focused = true" 
-                                     @blur="focused = false"
-                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none @error('isi_pengaduan') border-red-500 @enderror"
-                                     placeholder="Jelaskan detail pengaduan Anda dengan lengkap dan jelas...">{{ old('isi_pengaduan') }}</textarea>
+                                      name="isi_pengaduan" 
+                                      rows="6"
+                                      x-model="formData.isi_pengaduan"
+                                      @input="wordCount = $event.target.value.length"
+                                      @focus="focused = true" 
+                                      @blur="focused = false"
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none @error('isi_pengaduan') border-red-500 @enderror"
+                                      placeholder="Jelaskan detail pengaduan Anda dengan lengkap dan jelas...">{{ old('isi_pengaduan') }}</textarea>
                             <div class="absolute bottom-3 right-3">
                                 <div :class="{ 'text-green-500': wordCount >= 20, 'text-red-400': wordCount < 20 && wordCount > 0, 'text-gray-400': wordCount == 0 }" class="text-xs">
                                     <span x-text="wordCount"></span> karakter
@@ -161,28 +193,30 @@
 
                     <!-- Upload Lampiran -->
                     <div x-data="{ 
-                        dragover: false, 
-                        fileName: '', 
-                        fileSize: '',
-                        handleDrop(e) {
-                            this.dragover = false;
-                            const files = e.dataTransfer.files;
-                            if (files.length > 0) {
-                                this.handleFileSelect(files[0]);
+                            dragover: false, 
+                            fileName: '', 
+                            fileSize: '',
+                            handleDrop(e) {
+                                this.dragover = false;
+                                const files = e.dataTransfer.files;
+                                if (files.length > 0) {
+                                    this.handleFileSelect(files[0]);
+                                }
+                            },
+                            handleFileSelect(file) {
+                                if (file) {
+                                    this.fileName = file.name;
+                                    this.fileSize = this.formatFileSize(file.size);
+                                }
+                            },
+                            formatFileSize(bytes) {
+                                if (bytes === 0) return '0 Bytes';
+                                const k = 1024;
+                                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
                             }
-                        },
-                        handleFileSelect(file) {
-                            this.fileName = file.name;
-                            this.fileSize = this.formatFileSize(file.size);
-                        },
-                        formatFileSize(bytes) {
-                            if (bytes === 0) return '0 Bytes';
-                            const k = 1024;
-                            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-                            const i = Math.floor(Math.log(bytes) / Math.log(k));
-                            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-                        }
-                    }">
+                        }">
                         <label class="block text-sm font-semibold text-gray-900 mb-3">
                             <span class="flex items-center">
                                 <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -287,15 +321,17 @@
                 submitting: false,
                 formData: {
                     judul: '{{ old("judul") }}',
+                    category: '{{ old("category") }}',
                     kategori: '{{ old("kategori") }}',
-                    isi_pengaduan: '{{ old("isi_pengaduan") }}'
+                    isi_pengaduan: `{!! old("isi_pengaduan") !!}`
                 },
                 
                 get progress() {
                     let completed = 0;
-                    let total = 3; // judul, kategori, isi_pengaduan
+                    let total = 4; // judul, category, kategori, isi_pengaduan
                     
                     if (this.formData.judul.length >= 5) completed++;
+                    if (this.formData.category) completed++;
                     if (this.formData.kategori) completed++;
                     if (this.formData.isi_pengaduan.length >= 20) completed++;
                     
@@ -304,6 +340,7 @@
                 
                 get isFormValid() {
                     return this.formData.judul.length >= 5 && 
+                           this.formData.category && 
                            this.formData.kategori && 
                            this.formData.isi_pengaduan.length >= 20;
                 },
@@ -319,3 +356,4 @@
         }
     </script>
 </x-layout>
+

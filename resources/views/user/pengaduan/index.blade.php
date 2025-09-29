@@ -86,14 +86,22 @@
                     <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
                         <div class="flex flex-col sm:flex-row gap-4 flex-1 items-center">
                             <div class="relative flex-1 w-full sm:max-w-md">
-                                <input name="search" value="{{ request('search') }}" type="text" placeholder="Cari berdasarkan judul..." class="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl ...">
+                                <input name="search" value="{{ request('search') }}" type="text" placeholder="Cari berdasarkan judul..." class="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-blue-500 focus:border-blue-500">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                                 </div>
                             </div>
                             
                             <div class="relative w-full sm:w-auto">
-                                <select name="status" class="appearance-none w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl ...">
+                                <select name="category" class="appearance-none w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">Semua Layanan</option>
+                                    <option value="pelayanan administrasi" @selected(request('category') == 'pelayanan administrasi')>Pelayanan Administrasi</option>
+                                    <option value="pelayanan umum" @selected(request('category') == 'pelayanan umum')>Pelayanan Umum</option>
+                                </select>
+                            </div>
+                            
+                            <div class="relative w-full sm:w-auto">
+                                <select name="status" class="appearance-none w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl focus:ring-blue-500 focus:border-blue-500">
                                     <option value="">Semua Status</option>
                                     <option value="baru" @selected(request('status') == 'baru')>Baru</option>
                                     <option value="diproses" @selected(request('status') == 'diproses')>Diproses</option>
@@ -126,6 +134,7 @@
                                 <span class="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full">{{ $pengaduan->nomor_pengaduan }}</span>
                                 <span class="px-3 py-1 text-xs font-semibold rounded-full capitalize {{ $pengaduan->status === 'baru' ? 'bg-orange-100 text-orange-800' : ($pengaduan->status === 'diproses' ? 'bg-yellow-100 text-yellow-800' : ($pengaduan->status === 'selesai' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')) }}">{{ $pengaduan->status }}</span>
                             </div>
+                            <p class="text-sm font-medium text-gray-500 capitalize mb-2">{{ $pengaduan->category }}</p>
                             <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2">{{ $pengaduan->judul }}</h3>
                             <p class="text-gray-600 mb-4 line-clamp-3">{{ $pengaduan->isi_pengaduan }}</p>
                         </div>
@@ -155,12 +164,21 @@
                 <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
-                           {{-- ... (header tabel) ... --}}
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pengaduan</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis Layanan</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                </tr>
+                            </thead>
                             <tbody class="divide-y divide-gray-200">
                                 @forelse ($pengaduans as $pengaduan)
                                 <tr class="hover:bg-gray-50 transition-colors duration-200">
                                     <td class="px-6 py-4"><div class="text-sm font-medium text-blue-600">{{ $pengaduan->nomor_pengaduan }}</div><div class="text-sm font-semibold text-gray-900 line-clamp-2">{{ $pengaduan->judul }}</div></td>
-                                    <td class="px-6 py-4"><div class="text-sm font-medium text-gray-900">{{ $pengaduan->user->name }}</div></td>
+                                    <td class="px-6 py-4"><div class="text-sm text-gray-900 capitalize">{{ $pengaduan->category }}</div></td>
                                     <td class="px-6 py-4"><span class="px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">{{ $pengaduan->kategori }}</span></td>
                                     <td class="px-6 py-4"><span class="px-3 py-1 text-xs font-semibold rounded-full capitalize {{ $pengaduan->status === 'baru' ? 'bg-orange-100 text-orange-800' : ($pengaduan->status === 'diproses' ? 'bg-yellow-100 text-yellow-800' : ($pengaduan->status === 'selesai' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')) }}">{{ $pengaduan->status }}</span></td>
                                     <td class="px-6 py-4 text-sm text-gray-500">{{ $pengaduan->created_at->format('d M Y') }}</td>

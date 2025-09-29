@@ -16,6 +16,7 @@ class PengaduanController extends Controller
     {
         $status = $request->get('status', 'semua');
         $kategori = $request->get('kategori', 'semua');
+        $category = $request->get('category', 'semua');
 
         $query = Pengaduan::with('user')->orderBy('created_at', 'desc');
 
@@ -27,6 +28,10 @@ class PengaduanController extends Controller
             $query->where('kategori', $kategori);
         }
 
+        if ($category !== 'semua') {
+            $query->where('category', $category);
+        }
+
         $pengaduan = $query->paginate(10);
 
         $statistik = [
@@ -36,10 +41,23 @@ class PengaduanController extends Controller
             'selesai' => Pengaduan::where('status', 'selesai')->count(),
         ];
 
-        // Ambil semua kategori unik untuk filter dropdown
-        $kategoriList = Pengaduan::select('kategori')->distinct()->pluck('kategori');
+        // Definisikan daftar filter secara statis agar semua opsi selalu muncul
+        $mainCategoryList = [
+            'pelayanan administrasi',
+            'pelayanan umum'
+        ];
 
-        return view('admin.pengaduan.index', compact('pengaduan', 'statistik', 'kategoriList', 'status', 'kategori'));
+        $kategoriList = [
+           'Surat Domisili',
+           'Surat Keterangan Lahir',
+           'Surat Keterangan Menikah',
+           'Surat Pengantar',
+           'Surat Keterangan Kematian',
+           'Surat Keterangan Tidak Mampu',
+           'Surat Keterangan Usaha',
+        ];
+
+        return view('admin.pengaduan.index', compact('pengaduan', 'statistik', 'kategoriList', 'mainCategoryList', 'status', 'kategori', 'category'));
     }
 
     /**
@@ -47,7 +65,6 @@ class PengaduanController extends Controller
      */
     public function show(Pengaduan $pengaduan)
     {
-        // Route model binding akan otomatis mencari pengaduan berdasarkan ID
         return view('admin.pengaduan.show', compact('pengaduan'));
     }
 
@@ -75,7 +92,6 @@ class PengaduanController extends Controller
      */
     public function destroy(Pengaduan $pengaduan)
     {
-        // Hapus file lampiran jika ada
         if ($pengaduan->lampiran && Storage::disk('public')->exists($pengaduan->lampiran)) {
             Storage::disk('public')->delete($pengaduan->lampiran);
         }
@@ -85,3 +101,4 @@ class PengaduanController extends Controller
         return redirect()->route('pengaduanAdmin.index')->with('success', 'Pengaduan berhasil dihapus.');
     }
 }
+
