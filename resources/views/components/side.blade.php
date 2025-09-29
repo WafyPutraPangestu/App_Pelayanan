@@ -52,7 +52,7 @@
             <div class="flex items-center space-x-3">
                 <!-- Logo menggunakan gambar -->
                 <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-lg overflow-hidden">
-                    <img src="{{ asset('storage/logo/logo.png') }}" alt="Logo" class="h-8 w-8 object-contain">
+                    <img src="{{ asset('images/logo/logo.png') }}" alt="Logo" class="h-8 w-8 object-contain">
                 </div>
                 <div>
                     <h2 class="text-lg font-bold text-gray-800">Sistem Pelayanan Desa</h2>
