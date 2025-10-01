@@ -48,7 +48,11 @@ class SuratMasukController extends Controller
         $filePath = storage_path('app/public/' . $suratMasuk->file_path_ttd);
         
         // 5. Buat nama file yang akan di-download oleh user
-        $namaFile = 'Surat-' . str_replace(' ', '_', $suratMasuk->jenis_surat) . '-' . $suratMasuk->nomor_surat_resmi . '.pdf';
+
+// Ganti karakter yang tidak valid ('/' dan '\') dengan '-'
+$nomorSuratClean = str_replace(['/', '\\'], '-', $suratMasuk->nomor_surat_resmi);
+
+$namaFile = 'Surat-' . str_replace(' ', '_', $suratMasuk->jenis_surat) . '-' . $nomorSuratClean . '.pdf';
         
         // 6. Kirim file ke browser user
         return response()->download($filePath, $namaFile);
