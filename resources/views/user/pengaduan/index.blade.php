@@ -139,10 +139,10 @@
                             <p class="text-gray-600 mb-4 line-clamp-3">{{ $pengaduan->isi_pengaduan }}</p>
                         </div>
                         <div class="p-6 bg-gray-50 border-t">
-                            <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                            {{-- <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
                                 <span class="font-medium text-gray-700">{{ $pengaduan->kategori }}</span>
                                 <span>{{ $pengaduan->created_at->diffForHumans() }}</span>
-                            </div>
+                            </div> --}}
                             <div class="flex items-center space-x-2">
                                 <a href="{{ route('pengaduan.show', $pengaduan) }}" class="flex-1 text-center bg-blue-600 text-white py-2 px-4 rounded-xl text-sm font-medium hover:bg-blue-700 transition">Lihat Detail</a>
                                 @if($pengaduan->status == 'baru')
@@ -168,7 +168,7 @@
                                 <tr>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pengaduan</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis Layanan</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
+                                    {{-- <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th> --}}
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
@@ -179,7 +179,7 @@
                                 <tr class="hover:bg-gray-50 transition-colors duration-200">
                                     <td class="px-6 py-4"><div class="text-sm font-medium text-blue-600">{{ $pengaduan->nomor_pengaduan }}</div><div class="text-sm font-semibold text-gray-900 line-clamp-2">{{ $pengaduan->judul }}</div></td>
                                     <td class="px-6 py-4"><div class="text-sm text-gray-900 capitalize">{{ $pengaduan->category }}</div></td>
-                                    <td class="px-6 py-4"><span class="px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">{{ $pengaduan->kategori }}</span></td>
+                                    {{-- <td class="px-6 py-4"><span class="px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">{{ $pengaduan->kategori }}</span></td> --}}
                                     <td class="px-6 py-4"><span class="px-3 py-1 text-xs font-semibold rounded-full capitalize {{ $pengaduan->status === 'baru' ? 'bg-orange-100 text-orange-800' : ($pengaduan->status === 'diproses' ? 'bg-yellow-100 text-yellow-800' : ($pengaduan->status === 'selesai' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')) }}">{{ $pengaduan->status }}</span></td>
                                     <td class="px-6 py-4 text-sm text-gray-500">{{ $pengaduan->created_at->format('d M Y') }}</td>
                                     <td class="px-6 py-4"><div class="flex items-center space-x-4">

@@ -138,7 +138,7 @@
                             </select>
                         </div>
 
-                        <div class="space-y-2">
+                        {{-- <div class="space-y-2">
                             <label for="kategori" class="block text-sm font-semibold text-gray-700">Kategori</label>
                             <select name="kategori" id="kategori" x-model="selectedKategori" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:border-purple-300">
                                 <option value="semua">Semua Kategori</option>
@@ -146,7 +146,7 @@
                                     <option value="{{ $kat }}" {{ $kategori == $kat ? 'selected' : '' }}>{{ $kat }}</option>
                                 @endforeach
                             </select>
-                        </div>
+                        </div> --}}
 
                         <div class="flex items-end">
                             <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-4 focus:ring-purple-300 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg font-semibold flex items-center justify-center space-x-2">
@@ -187,7 +187,7 @@
                                     <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Pengadu</th>
                                     <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Judul</th>
                                     <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Jenis Layanan</th>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Kategori</th>
+                                    {{-- <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Kategori</th> --}}
                                     <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Status</th>
                                     <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Tanggal</th>
                                     <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Aksi</th>
@@ -217,11 +217,11 @@
                                                 {{ $pengaduanItem->category }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        {{-- <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="px-3 py-1 text-xs font-bold bg-gray-100 text-gray-800 rounded-full">
                                                 {{ $pengaduanItem->kategori }}
                                             </span>
-                                        </td>
+                                        </td> --}}
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             @if($pengaduanItem->status == 'baru')
                                                 <span class="px-3 py-1.5 text-xs font-bold bg-gradient-to-r from-yellow-400 to-orange-400 text-white rounded-full shadow-sm animate-pulse-subtle">Baru</span>
@@ -407,7 +407,7 @@
         function pengaduanIndex() {
             return {
                 selectedStatus: '{{ $status }}',
-                selectedKategori: '{{ $kategori }}',
+                // selectedKategori: '{{ $kategori }}',
                 showDeleteModal: false,
                 deleteId: null,
                 deleteTitle: '',

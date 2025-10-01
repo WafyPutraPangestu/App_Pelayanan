@@ -85,7 +85,7 @@
                                 <p class="text-lg font-bold text-gray-900 capitalize">{{ $pengaduan->category }}</p>
                             </div>
 
-                            <div class="p-4 bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl hover:shadow-md transition-shadow duration-300">
+                            {{-- <div class="p-4 bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl hover:shadow-md transition-shadow duration-300">
                                 <div class="flex items-center space-x-2 mb-2">
                                     <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
@@ -93,7 +93,7 @@
                                     <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Kategori</p>
                                 </div>
                                 <span class="inline-block px-4 py-2 text-sm font-bold bg-gradient-to-r from-orange-100 to-red-100 text-orange-700 rounded-xl">{{ $pengaduan->kategori }}</span>
-                            </div>
+                            </div> --}}
                         </div>
 
                         <!-- Judul -->

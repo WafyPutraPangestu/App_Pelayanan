@@ -17,7 +17,7 @@ return new class extends Migration
      
             $table->string('judul');
             $table->text('isi_pengaduan');
-            $table->string('kategori');
+            $table->string('kategori')->nullable();
             $table->string('lampiran')->nullable();
             $table->enum('status', ['baru', 'diproses', 'selesai', 'ditolak'])->default('baru');
             $table->text('tanggapan')->nullable();

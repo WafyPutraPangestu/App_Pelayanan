@@ -115,7 +115,7 @@
                     </div>
 
                     <!-- Kategori -->
-                    <div x-data="{ focused: false }">
+                    {{-- <div x-data="{ focused: false }">
                         <label for="kategori" class="block text-sm font-semibold text-gray-900 mb-3">
                             <span class="flex items-center">
                                 <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -149,7 +149,7 @@
                         <div x-show="focused && formData.kategori" x-transition class="mt-2 text-xs text-green-600">
                             ✓ Kategori dipilih
                         </div>
-                    </div>
+                    </div> --}}
 
                     <!-- Isi Pengaduan -->
                     <div x-data="{ focused: false, wordCount: 0 }" x-init="wordCount = formData.isi_pengaduan.length">
@@ -322,17 +322,17 @@
                 formData: {
                     judul: '{{ old("judul") }}',
                     category: '{{ old("category") }}',
-                    kategori: '{{ old("kategori") }}',
+                    // kategori: '{{ old("kategori") }}',
                     isi_pengaduan: `{!! old("isi_pengaduan") !!}`
                 },
                 
                 get progress() {
                     let completed = 0;
-                    let total = 4; // judul, category, kategori, isi_pengaduan
+                    let total = 3; // judul, category, kategori, isi_pengaduan
                     
                     if (this.formData.judul.length >= 5) completed++;
                     if (this.formData.category) completed++;
-                    if (this.formData.kategori) completed++;
+                    // if (this.formData.kategori) completed++;
                     if (this.formData.isi_pengaduan.length >= 20) completed++;
                     
                     return (completed / total) * 100;
@@ -341,7 +341,7 @@
                 get isFormValid() {
                     return this.formData.judul.length >= 5 && 
                            this.formData.category && 
-                           this.formData.kategori && 
+                        //    this.formData.kategori && 
                            this.formData.isi_pengaduan.length >= 20;
                 },
                 

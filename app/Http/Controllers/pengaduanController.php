@@ -75,7 +75,7 @@ class pengaduanController extends Controller
             'judul' => 'required|min:5|max:255',
             'isi_pengaduan' => 'required|min:20',
             'category' => 'required|in:pelayanan administrasi,pelayanan umum',
-            'kategori' => 'required',
+            'kategori' => 'nullable',
             'lampiran' => 'nullable|file|mimes:jpeg,png,jpg,pdf,doc,docx|max:2048'
         ], [
             'judul.required' => 'Judul pengaduan harus diisi',
@@ -83,7 +83,7 @@ class pengaduanController extends Controller
             'isi_pengaduan.required' => 'Isi pengaduan harus diisi',
             'isi_pengaduan.min' => 'Isi pengaduan minimal 20 karakter',
             'category.required' => 'Jenis layanan harus dipilih',
-            'kategori.required' => 'Kategori harus dipilih',
+       
             'lampiran.mimes' => 'Format file tidak didukung',
             'lampiran.max' => 'Ukuran file maksimal 2MB'
         ]);
@@ -151,7 +151,7 @@ class pengaduanController extends Controller
             'judul' => 'required|min:5|max:255',
             'isi_pengaduan' => 'required|min:20',
             'category' => 'required|in:pelayanan administrasi,pelayanan umum',
-            'kategori' => 'required',
+            'kategori' => 'nullable',
             'lampiran' => 'nullable|file|mimes:jpeg,png,jpg,pdf,doc,docx|max:2048'
         ]);
         
